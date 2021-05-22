@@ -10,6 +10,11 @@
       "StackName": "amplify-invoicezero-dev-215710",
       "StackId": "arn:aws:cloudformation:us-east-2:462858354041:stack/amplify-invoicezero-dev-215710/698e39a0-baa9-11eb-99c6-06a9a994787e",
       "AmplifyAppId": "d3f9falg4evu3y"
+    },
+    "categories": {
+      "auth": {
+        "invoicezero16c649b5": {}
+      }
     }
   }
 }
