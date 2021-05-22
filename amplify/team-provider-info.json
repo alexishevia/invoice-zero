@@ -1,4 +1,23 @@
 {
+  "main": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-invoicezero-main-32622-authRole",
+      "UnauthRoleArn": "arn:aws:iam::462858354041:role/amplify-invoicezero-main-32622-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::462858354041:role/amplify-invoicezero-main-32622-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-invoicezero-main-32622-deployment",
+      "UnauthRoleName": "amplify-invoicezero-main-32622-unauthRole",
+      "StackName": "amplify-invoicezero-main-32622",
+      "StackId": "arn:aws:cloudformation:us-east-2:462858354041:stack/amplify-invoicezero-main-32622/7bc022b0-baad-11eb-9275-02a60f9ca1ba",
+      "AmplifyAppId": "d3f9falg4evu3y",
+      "AuthTriggerTemplateURL": ""
+    },
+    "categories": {
+      "auth": {
+        "invoicezero16c649b5": {}
+      }
+    }
+  },
   "dev": {
     "awscloudformation": {
       "AuthRoleName": "amplify-invoicezero-dev-215710-authRole",
