@@ -7,7 +7,11 @@ import {
   IonItem,
   IonLabel,
   IonPage,
+  IonLoading,
 } from "@ionic/react";
+import { API } from 'aws-amplify';
+
+import { createCategory } from '../../graphql/mutations';
 import Validation from "../../helpers/Validation";
 import ModalToolbar from "../ModalToolbar";
 
@@ -21,15 +25,21 @@ function buildCategoryData({ name }) {
 
 export default function NewCategory({ onError, onClose }) {
   const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(evt) {
     evt.preventDefault();
     try {
       const categoryData = buildCategoryData({ name });
-      // TODO: create category
-      // await coreApp.createCategory(categoryData);
+      setIsLoading(true);
+      await API.graphql({
+        query: createCategory,
+        variables: { input: categoryData }
+      });
+      setIsLoading(false);
       onClose();
     } catch (err) {
+      setIsLoading(false);
       onError(err);
     }
   }
@@ -42,6 +52,7 @@ export default function NewCategory({ onError, onClose }) {
   return (
     <IonPage id="main-content">
       <ModalToolbar title="New Category" onClose={onClose} />
+      <IonLoading isOpen={isLoading} />
       <IonContent>
         <form onSubmit={handleSubmit}>
           <IonItem>
