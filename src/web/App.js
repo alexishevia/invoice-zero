@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { AmplifyAuthenticator, AmplifySignIn, AmplifySignOut } from '@aws-amplify/ui-react';
 import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
 import { IonApp, IonContent } from "@ionic/react";
@@ -6,6 +6,8 @@ import { IonReactRouter } from "@ionic/react-router";
 import { Switch } from "react-router";
 import { Route } from "react-router-dom";
 
+import Errors from "./Errors";
+import NewCategory from "./screens/NewCategory";
 import NotFound from "./screens/NotFound";
 
 /* Core CSS required for Ionic components to work properly */
@@ -31,10 +33,15 @@ import MainMenu from './MainMenu';
 import Screen from './Screen';
 
 function App() {
-  const [authState, setAuthState] = React.useState();
-  const [user, setUser] = React.useState();
+  const [authState, setAuthState] = useState();
+  const [user, setUser] = useState();
+  const [errors, setErrors] = useState([]);
 
-  React.useEffect(() => {
+  function addError(err) {
+    setErrors([...errors, err]);
+  }
+
+  useEffect(() => {
     return onAuthUIStateChange((nextAuthState, authData) => {
       setAuthState(nextAuthState);
       setUser(authData)
@@ -44,10 +51,17 @@ function App() {
   if (authState === AuthState.SignedIn && user) {
     return (
       <IonApp>
+        <Errors errors={errors} onDismiss={() => setErrors([]) } />
         <IonContent>
           <IonReactRouter>
             <MainMenu />
             <Switch>
+              <Route
+                path="/newCategory"
+                component={({ history }) => (
+                  <NewCategory onError={addError} onClose={history.goBack} />
+                )}
+              />
               <Route
                 path="/"
                 exact
