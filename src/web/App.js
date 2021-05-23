@@ -2,6 +2,11 @@ import React from 'react';
 import { AmplifyAuthenticator, AmplifySignIn, AmplifySignOut } from '@aws-amplify/ui-react';
 import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
 import { IonApp, IonContent } from "@ionic/react";
+import { IonReactRouter } from "@ionic/react-router";
+import { Switch } from "react-router";
+import { Route } from "react-router-dom";
+
+import NotFound from "./screens/NotFound";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -40,11 +45,26 @@ function App() {
     return (
       <IonApp>
         <IonContent>
-          <MainMenu />
-          <Screen>
-            <div>Hello, {user.username}</div>
-            <AmplifySignOut />
-          </Screen>
+          <IonReactRouter>
+            <MainMenu />
+            <Switch>
+              <Route
+                path="/"
+                exact
+                component={() => (
+                  <Screen>
+                    <div>Hello, {user.username}</div>
+                    <AmplifySignOut />
+                  </Screen>
+                )}
+              />
+              <Route
+                component={({ history }) => (
+                  <NotFound onClose={() => history.push("/")} />
+                )}
+              />
+            </Switch>
+          </IonReactRouter>
         </IonContent>
       </IonApp>
     )
