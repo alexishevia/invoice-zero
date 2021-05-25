@@ -9,6 +9,7 @@ import { Route } from "react-router-dom";
 import Errors from "./Errors";
 import Categories from "./screens/Categories";
 import NewCategory from "./screens/NewCategory";
+import EditCategory from "./screens/EditCategory";
 import NotFound from "./screens/NotFound";
 
 /* Core CSS required for Ionic components to work properly */
@@ -61,7 +62,7 @@ function App() {
                 path="/categories"
                 component={() => (
                   <Screen>
-                    <Categories />
+                    <Categories onError={addError} />
                   </Screen>
                 )}
               />
@@ -69,6 +70,16 @@ function App() {
                 path="/newCategory"
                 component={({ history }) => (
                   <NewCategory onError={addError} onClose={history.goBack} />
+                )}
+              />
+              <Route
+                path="/editCategory/:id"
+                component={({ history, match }) => (
+                  <EditCategory
+                    id={match.params.id}
+                    onError={addError}
+                    onClose={history.goBack}
+                  />
                 )}
               />
               <Route
