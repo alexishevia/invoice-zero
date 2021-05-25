@@ -7,6 +7,7 @@ import { Switch } from "react-router";
 import { Route } from "react-router-dom";
 
 import Errors from "./Errors";
+import Categories from "./screens/Categories";
 import NewCategory from "./screens/NewCategory";
 import NotFound from "./screens/NotFound";
 
@@ -56,6 +57,14 @@ function App() {
           <IonReactRouter>
             <MainMenu />
             <Switch>
+              <Route
+                path="/categories"
+                component={() => (
+                  <Screen>
+                    <Categories />
+                  </Screen>
+                )}
+              />
               <Route
                 path="/newCategory"
                 component={({ history }) => (

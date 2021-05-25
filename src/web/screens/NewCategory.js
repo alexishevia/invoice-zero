@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   IonButton,
   IonContent,
@@ -8,12 +8,11 @@ import {
   IonLabel,
   IonPage,
   IonLoading,
-} from "@ionic/react";
-import { API } from 'aws-amplify';
-
-import { createCategory } from '../../graphql/mutations';
-import Validation from "../../helpers/Validation";
-import ModalToolbar from "../ModalToolbar";
+} from '@ionic/react';
+import { DataStore } from '@aws-amplify/datastore'
+import { Category } from '../../models';
+import Validation from '../../helpers/Validation';
+import ModalToolbar from '../ModalToolbar';
 
 function buildCategoryData({ name }) {
   const categoryData = {
@@ -32,10 +31,7 @@ export default function NewCategory({ onError, onClose }) {
     try {
       const categoryData = buildCategoryData({ name });
       setIsLoading(true);
-      await API.graphql({
-        query: createCategory,
-        variables: { input: categoryData }
-      });
+      await DataStore.save(new Category(categoryData))
       setIsLoading(false);
       onClose();
     } catch (err) {

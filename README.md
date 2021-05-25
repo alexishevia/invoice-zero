@@ -1,6 +1,18 @@
-# Getting Started with Create React App
+# Invoice Zero
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Invoice Zero is a personal finance app. 
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), and runs in AWS Amplify.
+
+## Getting Started
+
+1. Install NodeJS (v12.16.0+ preferred)
+2. Install dependencies with: `yarn install`
+3. Start the project with: `yarn start`
+
+## UI Library
+
+This project uses UI components from [@ionic/react](https://ionicframework.com/react). No particular reason, other than it looked nice and easy to use.
 
 ## Available Scripts
 
