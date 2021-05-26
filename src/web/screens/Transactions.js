@@ -5,11 +5,11 @@ import { IonLabel, IonItem, IonLoading } from '@ionic/react';
 import { Account, Category, Transfer } from '../../models';
 import TransactionsList from './TransactionsList';
 
-function sortByTransactionDate(a, b) {
-  if (a.transactionDate > b.transactionDate) {
+function sortByLastChangedAt(a, b) {
+  if (a._lastChangedAt > b._lastChangedAt) {
     return -1;
   }
-  if (b.transactionDate > a.transactionDate) {
+  if (b._lastChangedAt > a._lastChangedAt) {
     return 1;
   }
   return 0;
@@ -62,7 +62,7 @@ export default function Transactions({ onError }) {
         const transfers = await DataStore.query(Transfer);
         setTransactions([
           ...transfers.map(t => ({ ...t, type: "TRANSFER" }))
-        ].sort(sortByTransactionDate));
+        ].sort(sortByLastChangedAt));
         setIsLoading(false);
       } catch(err){
         setIsLoading(false);
