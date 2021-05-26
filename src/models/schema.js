@@ -31,8 +31,8 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "transactionDat": {
-                    "name": "transactionDat",
+                "transactionDate": {
+                    "name": "transactionDate",
                     "isArray": false,
                     "type": "AWSDate",
                     "isRequired": true,
@@ -302,5 +302,5 @@ export const schema = {
     },
     "enums": {},
     "nonModels": {},
-    "version": "e50733fcf9feabb7ee41645fb96f8d12"
+    "version": "5b05bde899ab12b47951e5f6c55feba6"
 };

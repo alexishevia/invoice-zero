@@ -3,7 +3,7 @@ type Transfer @model @auth(rules: [{allow: public}]) {
   amount: Float!
   fromID: ID!
   toID: ID!
-  transactionDat: AWSDate!
+  transactionDate: AWSDate!
 }
 
 type Expense @model @auth(rules: [{allow: public}]) {
@@ -34,3 +34,4 @@ type Account @model @auth(rules: [{allow: public}]) {
   name: String!
   initialBalance: Float!
 }
+ 

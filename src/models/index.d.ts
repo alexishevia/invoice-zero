@@ -9,7 +9,7 @@ export declare class Transfer {
   readonly amount: number;
   readonly fromID: string;
   readonly toID: string;
-  readonly transactionDat: string;
+  readonly transactionDate: string;
   constructor(init: ModelInit<Transfer>);
   static copyOf(source: Transfer, mutator: (draft: MutableModel<Transfer>) => MutableModel<Transfer> | void): Transfer;
 }
