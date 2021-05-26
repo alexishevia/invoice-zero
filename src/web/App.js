@@ -6,10 +6,13 @@ import { IonReactRouter } from "@ionic/react-router";
 import { Switch } from "react-router";
 import { Route } from "react-router-dom";
 
-import Errors from "./Errors";
+import Accounts from "./screens/Accounts";
 import Categories from "./screens/Categories";
-import NewCategory from "./screens/NewCategory";
+import EditAccount from "./screens/EditAccount";
 import EditCategory from "./screens/EditCategory";
+import Errors from "./Errors";
+import NewAccount from "./screens/NewAccount";
+import NewCategory from "./screens/NewCategory";
 import NotFound from "./screens/NotFound";
 
 /* Core CSS required for Ionic components to work properly */
@@ -58,6 +61,30 @@ function App() {
           <IonReactRouter>
             <MainMenu />
             <Switch>
+              <Route
+                path="/accounts"
+                component={() => (
+                  <Screen>
+                    <Accounts onError={addError} />
+                  </Screen>
+                )}
+              />
+              <Route
+                path="/newAccount"
+                component={({ history }) => (
+                  <NewAccount onError={addError} onClose={history.goBack} />
+                )}
+              />
+              <Route
+                path="/editAccount/:id"
+                component={({ history, match }) => (
+                  <EditAccount
+                    id={match.params.id}
+                    onError={addError}
+                    onClose={history.goBack}
+                  />
+                )}
+              />
               <Route
                 path="/categories"
                 component={() => (

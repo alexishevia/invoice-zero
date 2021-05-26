@@ -32,8 +32,8 @@ export default function Categories({ onError }) {
         <IonLabel>
           <h3>Categories</h3>
         </IonLabel>
-        <IonLoading isOpen={isLoading} />
       </IonItem>
+      <IonLoading isOpen={isLoading} />
       <CategoriesList categories={categories} />
     </>
   );
