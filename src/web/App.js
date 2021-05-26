@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { EventEmitter } from 'events';
 import { AmplifyAuthenticator, AmplifySignIn, AmplifySignOut } from '@aws-amplify/ui-react';
 import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
 import { IonApp, IonContent } from "@ionic/react";
@@ -13,7 +14,9 @@ import EditCategory from "./screens/EditCategory";
 import Errors from "./Errors";
 import NewAccount from "./screens/NewAccount";
 import NewCategory from "./screens/NewCategory";
+import NewTransfer from "./screens/NewTransfer";
 import NotFound from "./screens/NotFound";
+import Transactions from "./screens/Transactions";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -39,24 +42,22 @@ import Screen from './Screen';
 
 function App() {
   const [authState, setAuthState] = useState();
-  const [user, setUser] = useState();
-  const [errors, setErrors] = useState([]);
+  const errorEmitter = useRef(new EventEmitter());
 
-  function addError(err) {
-    setErrors([...errors, err]);
+  function onError(err) {
+    errorEmitter.current.emit('NEW_ERROR', err);
   }
 
   useEffect(() => {
-    return onAuthUIStateChange((nextAuthState, authData) => {
+    return onAuthUIStateChange((nextAuthState) => {
       setAuthState(nextAuthState);
-      setUser(authData)
     });
   }, []);
 
-  if (authState === AuthState.SignedIn && user) {
+  if (authState === AuthState.SignedIn) {
     return (
       <IonApp>
-        <Errors errors={errors} onDismiss={() => setErrors([]) } />
+        <Errors errorEmitter={errorEmitter.current} />
         <IonContent>
           <IonReactRouter>
             <MainMenu />
@@ -65,14 +66,14 @@ function App() {
                 path="/accounts"
                 component={() => (
                   <Screen>
-                    <Accounts onError={addError} />
+                    <Accounts onError={onError} />
                   </Screen>
                 )}
               />
               <Route
                 path="/newAccount"
                 component={({ history }) => (
-                  <NewAccount onError={addError} onClose={history.goBack} />
+                  <NewAccount onError={onError} onClose={history.goBack} />
                 )}
               />
               <Route
@@ -80,7 +81,7 @@ function App() {
                 component={({ history, match }) => (
                   <EditAccount
                     id={match.params.id}
-                    onError={addError}
+                    onError={onError}
                     onClose={history.goBack}
                   />
                 )}
@@ -89,14 +90,14 @@ function App() {
                 path="/categories"
                 component={() => (
                   <Screen>
-                    <Categories onError={addError} />
+                    <Categories onError={onError} />
                   </Screen>
                 )}
               />
               <Route
                 path="/newCategory"
                 component={({ history }) => (
-                  <NewCategory onError={addError} onClose={history.goBack} />
+                  <NewCategory onError={onError} onClose={history.goBack} />
                 )}
               />
               <Route
@@ -104,7 +105,26 @@ function App() {
                 component={({ history, match }) => (
                   <EditCategory
                     id={match.params.id}
-                    onError={addError}
+                    onError={onError}
+                    onClose={history.goBack}
+                  />
+                )}
+              />
+              <Route
+                path="/transactions"
+                component={() => {
+                  return (
+                    <Screen>
+                      <Transactions onError={onError} />
+                    </Screen>
+                  );
+                }}
+              />
+              <Route
+                path="/newTransfer"
+                component={({ history }) => (
+                  <NewTransfer
+                    onError={onError}
                     onClose={history.goBack}
                   />
                 )}
@@ -114,7 +134,6 @@ function App() {
                 exact
                 component={() => (
                   <Screen>
-                    <div>Hello, {user.username}</div>
                     <AmplifySignOut />
                   </Screen>
                 )}

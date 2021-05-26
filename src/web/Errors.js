@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import PropTypes from "prop-types";
 import { IonToast } from "@ionic/react";
 
@@ -11,12 +12,23 @@ function getErrorMsg(err) {
   return "Unknown error";
 }
 
-function Errors({ errors, onDismiss }) {
+function Errors({ errorEmitter }) {
+  const [errors, setErrors] = useState([]);
+
+  useEffect(() => {
+    function addError(err) {
+      setErrors([...errors, err]);
+    }
+    errorEmitter.on('NEW_ERROR', addError);
+    return () => errorEmitter.off('NEW_ERROR', addError);
+  });
+
+
   function handleDismiss(evt) {
     if (evt) {
       evt.preventDefault();
     }
-    onDismiss();
+    setErrors([]);
   }
 
   const msg = errors.length ? getErrorMsg(errors[errors.length - 1]) : "";
@@ -33,10 +45,10 @@ function Errors({ errors, onDismiss }) {
 }
 
 Errors.propTypes = {
-  errors: PropTypes.arrayOf(PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.instanceOf(Error),
-  ])).isRequired,
+  errorEmitter: PropTypes.shape({
+    on: PropTypes.func.isRequired,
+    off: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 export default Errors;

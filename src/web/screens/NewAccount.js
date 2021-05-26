@@ -94,4 +94,3 @@ NewAccount.propTypes = {
   onError: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
 };
-
