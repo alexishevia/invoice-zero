@@ -10,11 +10,11 @@ function Account({ account }) {
         <p>
           <IonNote color="primary">{name}</IonNote>
           <br />
-          Initial Balance: ${initialBalance.toFixed(2)}
+          Initial Balance: ${(initialBalance || 0).toFixed(2)}
           {typeof balance === "number" && !Number.isNaN(balance) ? (
             <>
               <br />
-              Current Balance: ${balance.toFixed(2)}
+              Current Balance: ${(balance || 0).toFixed(2)}
             </>
           ) : null}
         </p>

@@ -32,7 +32,7 @@ export default function Income({ income, accounts, categories }) {
     >
       <IonLabel>
         <p>
-          <IonNote color="success">${amount.toFixed(2)}</IonNote>
+          <IonNote color="success">${(amount || 0).toFixed(2)}</IonNote>
           <br />
           {categoryLabel} =&gt; {accountLabel}
           <br />

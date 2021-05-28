@@ -20,7 +20,7 @@ export default function Transfer({ transfer, accounts }) {
     >
       <IonLabel>
         <p>
-          <IonNote color="tertiary">${amount.toFixed(2)}</IonNote>
+          <IonNote color="tertiary">${(amount || 0).toFixed(2)}</IonNote>
           <br />
           {fromLabel} =&gt; {toLabel}
           <br />

@@ -32,7 +32,7 @@ export default function Expense({ expense, accounts, categories }) {
     >
       <IonLabel>
         <p>
-          <IonNote color="danger">${amount.toFixed(2)}</IonNote>
+          <IonNote color="danger">${(amount || 0).toFixed(2)}</IonNote>
           <br />
           {accountLabel} =&gt; {categoryLabel}
           <br />
