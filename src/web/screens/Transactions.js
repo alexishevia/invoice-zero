@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { DataStore } from '@aws-amplify/datastore'
 import { IonLabel, IonItem, IonLoading } from '@ionic/react';
 import { Account, Category, Transfer } from '../../models';
-import TransactionsList from './TransactionsList';
+import TransactionsList from '../TransactionsList';
 
 function sortByLastChangedAt(a, b) {
   if (a._lastChangedAt > b._lastChangedAt) {

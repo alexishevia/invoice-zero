@@ -13,9 +13,10 @@ import {
   IonSelect,
   IonSelectOption,
 } from "@ionic/react";
+import { getAccounts, getAccountBalances, onAccountsChange } from "../../models/accounts";
 import { dateToDayStr, isValidDayStr } from "../../helpers/date";
 import Validation from "../../helpers/Validation";
-import { Account, Transfer } from '../../models';
+import { Transfer } from '../../models';
 import ModalToolbar from "../ModalToolbar";
 
 function today() {
@@ -36,21 +37,18 @@ function buildTransferData({
   fromID,
   toID,
   amount,
-  description,
   transactionDate,
 }) {
   const transferData = {
     fromID,
     toID,
     amount: parseFloat(amount, 10),
-    description,
     transactionDate: isValidDayStr(transactionDate) ? transactionDate : today(),
   };
 
   new Validation(transferData, "fromID").required().string().notEmpty();
   new Validation(transferData, "toID").required().string().notEmpty();
   new Validation(transferData, "amount").required().number().biggerThan(0);
-  new Validation(transferData, "description").required().string();
   new Validation(transferData, "transactionDate").required().dayString();
 
   return transferData;
@@ -60,17 +58,16 @@ export default function NewTransfer({ onError, onClose }) {
   const [amount, setAmount] = useState(null);
   const [fromID, setFromID] = useState(null);
   const [toID, setToID] = useState(null);
-  const [description, setDescription] = useState(null);
   const [transactionDate, setTransferDate] = useState(today());
   const [accounts, setAccounts] = useState([]);
+  const [accountBalances, setAccountBalances] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchAccounts() {
       try {
         setIsLoading(true);
-        const result = await DataStore.query(Account);
-        setAccounts(result);
+        setAccounts(await getAccounts());
         setIsLoading(false);
       } catch(err){
         setIsLoading(false);
@@ -78,9 +75,20 @@ export default function NewTransfer({ onError, onClose }) {
       }
     }
     fetchAccounts();
-    const subscription = DataStore.observe(Account).subscribe(() => fetchAccounts())
+    const subscription = onAccountsChange(() => fetchAccounts());
     return () => { subscription.unsubscribe() }
   }, [onError]);
+
+  useEffect(() => {
+    async function fetchAccountBalances() {
+      try {
+        setAccountBalances(await getAccountBalances(accounts));
+      } catch(err){
+        onError(err);
+      }
+    }
+    fetchAccountBalances();
+  }, [accounts, onError]);
 
   async function handleSubmit(evt) {
     evt.preventDefault();
@@ -89,7 +97,6 @@ export default function NewTransfer({ onError, onClose }) {
         fromID,
         toID,
         amount,
-        description,
         transactionDate,
       });
       setIsLoading(true);
@@ -114,6 +121,19 @@ export default function NewTransfer({ onError, onClose }) {
       <IonContent>
         <form onSubmit={handleSubmit}>
           <IonItem>
+            <IonLabel position="stacked">Amount:</IonLabel>
+            <IonInput
+              type="number"
+              step="0.01"
+              value={amount}
+              placeholder="$"
+              onIonChange={(evt) => {
+                setAmount(evt.detail.value);
+              }}
+              required
+            />
+          </IonItem>
+          <IonItem>
             <IonLabel position="stacked">From:</IonLabel>
             <IonSelect
               value={fromID}
@@ -124,10 +144,10 @@ export default function NewTransfer({ onError, onClose }) {
             >
               {(accounts || [])
                 .sort(sortByName)
-                .map(({ id: accID, name, balance }) => (
+                .map(({ id: accID, name }) => (
                   <IonSelectOption key={accID} value={accID}>
                     {name}
-                    {balance ? ` ($${balance} available)` : ""}
+                    {accountBalances.hasOwnProperty(accID) ? ` ($${accountBalances[accID]} available)` : ""}
                   </IonSelectOption>
                 ))}
             </IonSelect>
@@ -143,26 +163,13 @@ export default function NewTransfer({ onError, onClose }) {
             >
               {(accounts || [])
                 .sort(sortByName)
-                .map(({ id: accID, name, balance }) => (
+                .map(({ id: accID, name }) => (
                   <IonSelectOption key={accID} value={accID}>
                     {name}
-                    {balance ? ` ($${balance} available)` : ""}
+                    {accountBalances.hasOwnProperty(accID) ? ` ($${accountBalances[accID]} available)` : ""}
                   </IonSelectOption>
                 ))}
             </IonSelect>
-          </IonItem>
-          <IonItem>
-            <IonLabel position="stacked">Amount:</IonLabel>
-            <IonInput
-              type="number"
-              step="0.01"
-              value={amount}
-              placeholder="$"
-              onIonChange={(evt) => {
-                setAmount(evt.detail.value);
-              }}
-              required
-            />
           </IonItem>
           <IonItem>
             <IonLabel position="stacked">Date:</IonLabel>
@@ -170,16 +177,6 @@ export default function NewTransfer({ onError, onClose }) {
               value={transactionDate}
               onIonChange={(evt) => {
                 setTransferDate(evt.detail.value);
-              }}
-            />
-          </IonItem>
-          <IonItem>
-            <IonLabel position="stacked">Description:</IonLabel>
-            <IonInput
-              type="text"
-              value={description}
-              onIonChange={(evt) => {
-                setDescription(evt.detail.value);
               }}
             />
           </IonItem>

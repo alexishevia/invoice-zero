@@ -8,7 +8,7 @@ function getAccountName(accounts, id) {
 }
 
 export default function Transfer({ transfer, accounts }) {
-  const { id, amount, description, transactionDate, fromID, toID } = transfer;
+  const { id, amount, transactionDate, fromID, toID } = transfer;
   const fromLabel = getAccountName(accounts, fromID);
   const toLabel = getAccountName(accounts, toID);
 
@@ -25,7 +25,6 @@ export default function Transfer({ transfer, accounts }) {
           {fromLabel} =&gt; {toLabel}
           <br />
           <span className="TransactionsListItemDate">{transactionDate}</span>
-          {description}
         </p>
       </IonLabel>
     </IonItem>
@@ -35,7 +34,6 @@ export default function Transfer({ transfer, accounts }) {
 Transfer.propTypes = {
   transfer: PropTypes.shape({
     amount: PropTypes.number.isRequired,
-    description: PropTypes.string.isRequired,
     fromID: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
     toID: PropTypes.string.isRequired,
