@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { DataStore } from '@aws-amplify/datastore'
 import { IonLabel, IonItem, IonLoading } from '@ionic/react';
-import { Account, Category, Transfer } from '../../models';
+import { getAccounts, onAccountsChange } from "../../models/accounts";
+import { getCategories, onCategoriesChange } from "../../models/categories";
+import { getTransfers, onTransfersChange } from "../../models/transfers";
+import { getIncomes, onIncomesChange } from "../../models/incomes";
+import { getExpenses, onExpensesChange } from "../../models/expenses";
 import TransactionsList from '../TransactionsList';
 
 function sortByLastChangedAt(a, b) {
@@ -25,8 +28,7 @@ export default function Transactions({ onError }) {
     async function fetchAccounts() {
       try {
         setIsLoading(true);
-        const result = await DataStore.query(Account);
-        setAccounts(result);
+        setAccounts(await getAccounts());
         setIsLoading(false);
       } catch(err){
         setIsLoading(false);
@@ -34,7 +36,7 @@ export default function Transactions({ onError }) {
       }
     }
     fetchAccounts();
-    const subscription = DataStore.observe(Account).subscribe(() => fetchAccounts())
+    const subscription = onAccountsChange(() => fetchAccounts());
     return () => { subscription.unsubscribe() }
   }, [onError]);
 
@@ -42,8 +44,7 @@ export default function Transactions({ onError }) {
     async function fetchCategories() {
       try {
         setIsLoading(true);
-        const result = await DataStore.query(Category);
-        setCategories(result);
+        setCategories(await getCategories());
         setIsLoading(false);
       } catch(err){
         setIsLoading(false);
@@ -51,7 +52,7 @@ export default function Transactions({ onError }) {
       }
     }
     fetchCategories();
-    const subscription = DataStore.observe(Category).subscribe(() => fetchCategories())
+    const subscription = onCategoriesChange(() => fetchCategories());
     return () => { subscription.unsubscribe() }
   }, [onError]);
 
@@ -59,9 +60,19 @@ export default function Transactions({ onError }) {
     async function fetchTransactions() {
       try {
         setIsLoading(true);
-        const transfers = await DataStore.query(Transfer);
+        const [
+          transfers,
+          incomes,
+          expenses
+        ] = await Promise.all([
+          getTransfers(),
+          getIncomes(),
+          getExpenses(),
+        ]);
         setTransactions([
-          ...transfers.map(t => ({ ...t, type: "TRANSFER" }))
+          ...transfers.map(t => ({ ...t, type: "TRANSFER" })),
+          ...incomes.map(i => ({ ...i, type: "INCOME" })),
+          ...expenses.map(e => ({ ...e, type: "EXPENSE" })),
         ].sort(sortByLastChangedAt));
         setIsLoading(false);
       } catch(err){
@@ -70,8 +81,14 @@ export default function Transactions({ onError }) {
       }
     }
     fetchTransactions();
-    const subscription = DataStore.observe(Transfer).subscribe(() => fetchTransactions())
-    return () => { subscription.unsubscribe() }
+    const transfersSubscription = onTransfersChange(() => fetchTransactions())
+    const incomesSubscription = onIncomesChange(() => fetchTransactions())
+    const expensesSubscription = onExpensesChange(() => fetchTransactions())
+    return () => {
+      transfersSubscription.unsubscribe()
+      incomesSubscription.unsubscribe()
+      expensesSubscription.unsubscribe()
+    }
   }, [onError]);
 
   return (

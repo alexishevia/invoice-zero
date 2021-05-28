@@ -15,6 +15,8 @@ import Errors from "./Errors";
 import NewAccount from "./screens/NewAccount";
 import NewCategory from "./screens/NewCategory";
 import NewTransfer from "./screens/NewTransfer";
+import NewIncome from "./screens/NewIncome";
+import NewExpense from "./screens/NewExpense";
 import NotFound from "./screens/NotFound";
 import Transactions from "./screens/Transactions";
 
@@ -124,6 +126,24 @@ function App() {
                 path="/newTransfer"
                 component={({ history }) => (
                   <NewTransfer
+                    onError={onError}
+                    onClose={history.goBack}
+                  />
+                )}
+              />
+              <Route
+                path="/newIncome"
+                component={({ history }) => (
+                  <NewIncome
+                    onError={onError}
+                    onClose={history.goBack}
+                  />
+                )}
+              />
+              <Route
+                path="/newExpense"
+                component={({ history }) => (
+                  <NewExpense
                     onError={onError}
                     onClose={history.goBack}
                   />

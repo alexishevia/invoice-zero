@@ -1,7 +1,7 @@
 import { DataStore } from '@aws-amplify/datastore'
 import { Account } from '.';
 import { forEachTransfer } from './transfers';
-import { forEachIncome } from './income';
+import { forEachIncome } from './incomes';
 import { forEachExpense } from './expense';
 
 export async function getAccounts() {
