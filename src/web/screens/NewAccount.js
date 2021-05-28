@@ -9,8 +9,7 @@ import {
   IonPage,
   IonLoading,
 } from "@ionic/react";
-import { DataStore } from '@aws-amplify/datastore'
-import { Account } from '../../models';
+import { createAccount } from '../../models/accounts';
 import Validation from "../../helpers/Validation";
 import ModalToolbar from "../ModalToolbar";
 
@@ -35,9 +34,8 @@ export default function NewAccount({ onError, onClose }) {
   async function handleSubmit(evt) {
     evt.preventDefault();
     try {
-      const accountData = buildAccountData({ name, initialBalance });
       setIsLoading(true);
-      await DataStore.save(new Account(accountData))
+      await createAccount(buildAccountData({ name, initialBalance }));
       setIsLoading(false);
       onClose();
     } catch (err) {

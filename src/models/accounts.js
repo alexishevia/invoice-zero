@@ -4,6 +4,29 @@ import { forEachTransfer } from './transfers';
 import { forEachIncome } from './incomes';
 import { forEachExpense } from './expense';
 
+export async function createAccount(data) {
+  await DataStore.save(new Account(data));
+}
+
+export async function getAccountByID(id) {
+  const category = await DataStore.query(Account, id);
+  return category
+}
+
+export async function updateAccount(category, newData) {
+  await DataStore.save(
+    Account.copyOf(category, updated => {
+      Object.entries(newData).forEach(([key, val]) => {
+        updated[key] = val
+      });
+    })
+  )
+}
+
+export async function deleteAccount(category) {
+  await DataStore.delete(category)
+}
+
 export async function getAccounts() {
   const accounts = await DataStore.query(Account);
   return accounts

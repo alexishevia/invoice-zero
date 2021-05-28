@@ -11,17 +11,13 @@ import {
   IonPage,
   IonLoading,
 } from "@ionic/react";
-import { DataStore } from '@aws-amplify/datastore'
 import { trashOutline } from "ionicons/icons";
-import { Category } from '../../models';
+import { getCategoryByID, updateCategory, deleteCategory } from '../../models/categories';
 import Validation from "../../helpers/Validation";
 import ModalToolbar from "../ModalToolbar";
 
-function buildcategoryData({ id, name }) {
-  const categoryData = {
-    id,
-    name,
-  };
+function buildcategoryData({ name }) {
+  const categoryData = { name };
   new Validation(categoryData, "name").required().string().notEmpty();
   return categoryData;
 }
@@ -36,8 +32,7 @@ export default function Editcategory({ id, onClose, onError }) {
     async function fetchCategory() {
       try {
         setIsLoading(true);
-        const data = await DataStore.query(Category, id);
-        setCategory(data);
+        setCategory(await getCategoryByID(id));
         setIsLoading(false);
       } catch(err) {
         setIsLoading(false);
@@ -63,7 +58,7 @@ export default function Editcategory({ id, onClose, onError }) {
     try {
       setDeleteAlertOpen(false);
       setIsLoading(true);
-      await DataStore.delete(category)
+      await deleteCategory(category)
       setIsLoading(false);
       onClose();
     } catch (err) {
@@ -76,12 +71,7 @@ export default function Editcategory({ id, onClose, onError }) {
     evt.preventDefault();
     try {
       setIsLoading(true);
-      const categoryData = buildcategoryData({ id, name: nameVal });
-      await DataStore.save(
-        Category.copyOf(category, updated => {
-          updated.name = categoryData.name
-        })
-      )
+      await updateCategory(category, buildcategoryData({ name: nameVal }));
       setIsLoading(false);
       onClose();
     } catch (err) {

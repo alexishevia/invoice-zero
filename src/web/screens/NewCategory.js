@@ -9,15 +9,12 @@ import {
   IonPage,
   IonLoading,
 } from '@ionic/react';
-import { DataStore } from '@aws-amplify/datastore'
-import { Category } from '../../models';
+import { createCategory } from '../../models/categories';
 import Validation from '../../helpers/Validation';
 import ModalToolbar from '../ModalToolbar';
 
 function buildCategoryData({ name }) {
-  const categoryData = {
-    name,
-  };
+  const categoryData = { name };
   new Validation(categoryData, "name").required().string().notEmpty();
   return categoryData;
 }
@@ -29,9 +26,8 @@ export default function NewCategory({ onError, onClose }) {
   async function handleSubmit(evt) {
     evt.preventDefault();
     try {
-      const categoryData = buildCategoryData({ name });
       setIsLoading(true);
-      await DataStore.save(new Category(categoryData))
+      await createCategory(buildCategoryData({ name }))
       setIsLoading(false);
       onClose();
     } catch (err) {

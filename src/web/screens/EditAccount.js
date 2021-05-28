@@ -12,14 +12,12 @@ import {
   IonPage,
 } from "@ionic/react";
 import { trashOutline } from "ionicons/icons";
-import { DataStore } from '@aws-amplify/datastore'
-import { Account } from '../../models';
+import { getAccountByID, updateAccount, deleteAccount } from '../../models/accounts';
 import Validation from "../../helpers/Validation";
 import ModalToolbar from "../ModalToolbar";
 
-function buildAccountData({ id, name, initialBalance }) {
+function buildAccountData({ name, initialBalance }) {
   const accountData = {
-    id,
     name,
     initialBalance: parseFloat(initialBalance, 10),
   };
@@ -42,8 +40,7 @@ export default function EditAccount({ id, onClose, onError }) {
     async function fetchAccount() {
       try {
         setIsLoading(true);
-        const data = await DataStore.query(Account, id);
-        setAccount(data);
+        setAccount(await getAccountByID(id));
         setIsLoading(false);
       } catch(err) {
         setIsLoading(false);
@@ -70,7 +67,7 @@ export default function EditAccount({ id, onClose, onError }) {
     try {
       setDeleteAlertOpen(false);
       setIsLoading(true);
-      await DataStore.delete(account)
+      await deleteAccount(account);
       setIsLoading(false);
       onClose();
     } catch (err) {
@@ -83,17 +80,10 @@ export default function EditAccount({ id, onClose, onError }) {
     evt.preventDefault();
     try {
       setIsLoading(true);
-      const accountData = buildAccountData({
-        id,
+      await updateAccount(account, buildAccountData({
         name: nameVal,
         initialBalance: initialBalanceVal,
-      });
-      await DataStore.save(
-        Account.copyOf(account, updated => {
-          updated.name = accountData.name
-          updated.initialBalance = accountData.initialBalance
-        })
-      )
+      }));
       setIsLoading(false);
       onClose();
     } catch (err) {

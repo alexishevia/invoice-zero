@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { DataStore } from '@aws-amplify/datastore'
 import { IonLabel, IonItem, IonLoading } from "@ionic/react";
-import { Account } from '../../../models';
+import { getAccounts, onAccountsChange } from '../../../models/accounts';
 import AccountsList from "./AccountsList";
 
 export default function Accounts({ onError }) {
@@ -13,8 +12,7 @@ export default function Accounts({ onError }) {
     async function fetchAccounts() {
       try {
         setIsLoading(true);
-        const result = await DataStore.query(Account);
-        setAccounts(result);
+        setAccounts(await getAccounts());
         setIsLoading(false);
       } catch(err){
         setIsLoading(false);
@@ -22,7 +20,7 @@ export default function Accounts({ onError }) {
       }
     }
     fetchAccounts();
-    const subscription = DataStore.observe(Account).subscribe(() => fetchAccounts())
+    const subscription = onAccountsChange(() => fetchAccounts())
     return () => { subscription.unsubscribe() }
   }, [onError]);
 

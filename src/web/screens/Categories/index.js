@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { DataStore } from '@aws-amplify/datastore'
 import { IonLabel, IonItem, IonLoading } from '@ionic/react';
-import { Category } from '../../../models';
+import { getCategories, onCategoriesChange } from '../../../models/categories';
 import CategoriesList from './CategoriesList';
 
 export default function Categories({ onError }) {
@@ -13,8 +12,7 @@ export default function Categories({ onError }) {
     async function fetchCategories() {
       try {
         setIsLoading(true);
-        const result = await DataStore.query(Category);
-        setCategories(result);
+        setCategories(await getCategories());
         setIsLoading(false);
       } catch(err){
         setIsLoading(false);
@@ -22,7 +20,7 @@ export default function Categories({ onError }) {
       }
     }
     fetchCategories();
-    const subscription = DataStore.observe(Category).subscribe(() => fetchCategories())
+    const subscription = onCategoriesChange(() => fetchCategories())
     return () => { subscription.unsubscribe() }
   }, [onError]);
 
