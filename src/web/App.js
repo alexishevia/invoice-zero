@@ -11,12 +11,13 @@ import Accounts from "./screens/Accounts";
 import Categories from "./screens/Categories";
 import EditAccount from "./screens/EditAccount";
 import EditCategory from "./screens/EditCategory";
+import EditExpense from "./screens/EditExpense";
 import Errors from "./Errors";
 import NewAccount from "./screens/NewAccount";
 import NewCategory from "./screens/NewCategory";
-import NewTransfer from "./screens/NewTransfer";
-import NewIncome from "./screens/NewIncome";
 import NewExpense from "./screens/NewExpense";
+import NewIncome from "./screens/NewIncome";
+import NewTransfer from "./screens/NewTransfer";
 import NotFound from "./screens/NotFound";
 import Transactions from "./screens/Transactions";
 
@@ -144,6 +145,16 @@ function App() {
                 path="/newExpense"
                 component={({ history }) => (
                   <NewExpense
+                    onError={onError}
+                    onClose={history.goBack}
+                  />
+                )}
+              />
+              <Route
+                path="/editExpense/:id"
+                component={({ history, match }) => (
+                  <EditExpense
+                    id={match.params.id}
                     onError={onError}
                     onClose={history.goBack}
                   />

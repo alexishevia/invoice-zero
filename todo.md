@@ -1,5 +1,4 @@
 # Roadmap
-- [ ] allow editing expenses
 - [ ] allow editing incomes
 - [ ] allow editing transfers
 - [ ] add pagination and filtering to transactions page
