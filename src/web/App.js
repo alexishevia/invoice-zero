@@ -12,6 +12,7 @@ import Categories from "./screens/Categories";
 import EditAccount from "./screens/EditAccount";
 import EditCategory from "./screens/EditCategory";
 import EditExpense from "./screens/EditExpense";
+import EditIncome from "./screens/EditIncome";
 import Errors from "./Errors";
 import NewAccount from "./screens/NewAccount";
 import NewCategory from "./screens/NewCategory";
@@ -154,6 +155,16 @@ function App() {
                 path="/editExpense/:id"
                 component={({ history, match }) => (
                   <EditExpense
+                    id={match.params.id}
+                    onError={onError}
+                    onClose={history.goBack}
+                  />
+                )}
+              />
+              <Route
+                path="/editIncome/:id"
+                component={({ history, match }) => (
+                  <EditIncome
                     id={match.params.id}
                     onError={onError}
                     onClose={history.goBack}
