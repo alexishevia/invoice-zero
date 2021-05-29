@@ -1,5 +1,4 @@
 # Roadmap
-- [ ] add pagination and filtering to transactions page
 - [ ] move sign out to settings page
 - [ ] add "clear all local data" to settings page
 - [ ] make "new expense" the home page

@@ -30,6 +30,20 @@ export async function getTransfers() {
   return transfers
 }
 
+export async function queryTransfers({
+  fromDate,
+  toDate,
+  accountIDs,
+}) {
+  const transfers = await DataStore.query(Transfer, t => (
+    t.transactionDate("ge", fromDate)
+    .transactionDate("le", toDate)
+    .or(t => accountIDs.reduce((query, id) => query.fromID("eq", id), t))
+    .or(t => accountIDs.reduce((query, id) => query.toID("eq", id), t))
+  ));
+  return transfers
+}
+
 export function onTransfersChange(func) {
   return DataStore.observe(Transfer).subscribe(func)
 }

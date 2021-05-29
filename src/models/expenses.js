@@ -30,6 +30,21 @@ export async function getExpenses() {
   return transfers
 }
 
+export async function queryExpenses({
+  fromDate,
+  toDate,
+  accountIDs,
+  categoryIDs,
+}) {
+  const expenses = await DataStore.query(Expense, t => (
+    t.transactionDate("ge", fromDate)
+    .transactionDate("le", toDate)
+    .or(t => accountIDs.reduce((query, id) => query.accountID("eq", id), t))
+    .or(t => categoryIDs.reduce((query, id) => query.categoryID("eq", id), t))
+  ));
+  return expenses
+}
+
 export function onExpensesChange(func) {
   return DataStore.observe(Expense).subscribe(func)
 }
