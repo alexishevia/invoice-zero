@@ -67,8 +67,11 @@ export default function Transactions({ onError }) {
     setIsFiltersModalOpen(true);
   }
 
-  function handleCloseFiltersModal(newFilters) {
+  function handleFiltersUpdate(newFilters) {
     setActiveFilters(newFilters);
+  }
+
+  function handleCloseFiltersModal() {
     setIsFiltersModalOpen(false);
   }
 
@@ -169,6 +172,7 @@ export default function Transactions({ onError }) {
         accounts={accounts}
         categories={categories}
         initialFilters ={activeFilters}
+        onUpdate={handleFiltersUpdate}
         onClose={handleCloseFiltersModal}
       />
       <IonItem>

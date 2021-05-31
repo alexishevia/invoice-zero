@@ -1,27 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { IonItem, IonItemDivider, IonLabel, IonToggle } from "@ionic/react";
+import { IonItem, IonLabel, IonToggle } from "@ionic/react";
 
-export default function TypesFilter({ types, setStatusForType }) {
+const allTypes = [
+  { name: "Expense", value: "EXPENSE" },
+  { name: "Income", value: "INCOME" },
+  { name: "Transfer", value: "TRANSFER" },
+]
+
+export default function TypesFilter({ activeTypes, setStatusForType }) {
+  const [isAllToggled, setIsAllToggled] = useState(true);
+
+  function toggleAll(evt) {
+    evt && evt.preventDefault();
+    const newVal = !isAllToggled;
+    setIsAllToggled(newVal);
+    allTypes.forEach(({ value }) => {
+      setStatusForType(value, newVal);
+    });
+  }
+
   return (
     <>
-      <IonItemDivider>
-        <IonLabel color="primary">
-          <h2>Transaction Type</h2>
-        </IonLabel>
-      </IonItemDivider>
-      {[
-        { name: "Expense", value: "EXPENSE" },
-        { name: "Income", value: "INCOME" },
-        { name: "Transfer", value: "TRANSFER" },
-      ].map(({ name, value }) => {
-        const isActive = types.includes(value);
+      <IonItem>
+        <IonLabel color="primary">Transaction Type</IonLabel>
+        <IonToggle checked={isAllToggled} onIonChange={toggleAll} />
+      </IonItem>
+      {allTypes.map(({ name, value }) => {
+        const isActive = activeTypes.includes(value);
         return (
           <IonItem key={value}>
             <IonLabel>{name}</IonLabel>
             <IonToggle
               checked={isActive}
-              onIonChange={() => {
+              onIonChange={(evt) => {
+                evt && evt.preventDefault();
                 setStatusForType(value, !isActive);
               }}
             />
@@ -33,6 +46,6 @@ export default function TypesFilter({ types, setStatusForType }) {
 }
 
 TypesFilter.propTypes = {
-  types: PropTypes.arrayOf(PropTypes.string).isRequired,
+  activeTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
   setStatusForType: PropTypes.func.isRequired,
 };

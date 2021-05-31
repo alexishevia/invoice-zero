@@ -1,5 +1,6 @@
 # Roadmap
 - [ ] create trends page
+- [ ] create balances page
 - [ ] add euro support
 - [ ] allow importing data
 - [ ] add sync status

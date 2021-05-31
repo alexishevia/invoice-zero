@@ -22,16 +22,27 @@ function unique(arr) {
   return Array.from(new Set(arr));
 }
 
-export default function FiltersModal({ isOpen, accounts, categories, initialFilters, onClose }) {
+export default function FiltersModal({ isOpen, accounts, categories, initialFilters, onUpdate, onClose }) {
   const [transactionTypes, setTransactionTypes] = useState(initialFilters.transactionTypes);
   const [fromDate, setFromDate] = useState(initialFilters.fromDate);
   const [toDate, setToDate] = useState(initialFilters.toDate);
   const [accountIds, setAccountIds] = useState(initialFilters.accountIds);
   const [categoryIds, setCategoryIds] = useState(initialFilters.categoryIds);
+  const [isApplyVisible, setIsApplyVisible] = useState(false);
 
-  function handleOnClose(evt) {
+  function reset() {
+    setTransactionTypes(initialFilters.transactionTypes);
+    setFromDate(initialFilters.fromDate);
+    setToDate(initialFilters.toDate);
+    setAccountIds(initialFilters.accountIds);
+    setCategoryIds(initialFilters.categoryIds);
+    setIsApplyVisible(false);
+  }
+
+  function handleApply(evt) {
     evt && evt.preventDefault();
-    onClose({
+    setIsApplyVisible(false);
+    onUpdate({
       transactionTypes,
       fromDate,
       toDate,
@@ -40,7 +51,14 @@ export default function FiltersModal({ isOpen, accounts, categories, initialFilt
     });
   }
 
+  function handleOnClose(evt) {
+    evt && evt.preventDefault();
+    reset();
+    onClose();
+  }
+
   function setStatusForType(type, isActive) {
+    setIsApplyVisible(true);
     setTransactionTypes((prevTypes) =>
       isActive
         ? unique([...prevTypes, type])
@@ -49,11 +67,23 @@ export default function FiltersModal({ isOpen, accounts, categories, initialFilt
   }
 
   function setStatusForAccount(id, isActive) {
+    setIsApplyVisible(true);
     setAccountIds((prevStatus) => ({ ...prevStatus, [id]: isActive }));
   }
 
   function setStatusForCategory(id, isActive) {
+    setIsApplyVisible(true);
     setCategoryIds((prevStatus) => ({ ...prevStatus, [id]: isActive }));
+  }
+
+  function updateFromDate(val) {
+    setIsApplyVisible(true);
+    setFromDate(val);
+  }
+
+  function updateToDate(val) {
+    setIsApplyVisible(true);
+    updateToDate(val);
   }
 
   return (
@@ -68,15 +98,24 @@ export default function FiltersModal({ isOpen, accounts, categories, initialFilt
           </IonButton>
         </IonButtons>
         <IonTitle>Filters</IonTitle>
+        {
+          isApplyVisible ? (
+            <IonButtons slot="end" style={{marginRight: "1em" }}>
+              <IonButton fill="outline" onClick={handleApply}>
+                Apply
+              </IonButton>
+            </IonButtons>
+          ) : <></>
+        }
       </IonToolbar>
       <IonContent>
         <IonList>
-          <TypesFilter types={transactionTypes} setStatusForType={setStatusForType} />
+          <TypesFilter activeTypes={transactionTypes} setStatusForType={setStatusForType} />
           <DateFilter
             fromDate={fromDate}
-            setFromDate={setFromDate}
+            setFromDate={updateFromDate}
             toDate={toDate}
-            setToDate={setToDate}
+            setToDate={updateToDate}
           />
           <AccountsFilter
             accounts={accounts}
@@ -111,5 +150,6 @@ FiltersModal.propTypes = {
     accountIds: PropTypes.object.isRequired,
     categoryIds: PropTypes.object.isRequired,
   }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
 };
