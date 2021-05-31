@@ -1,5 +1,4 @@
 # Roadmap
-- [ ] make "new expense" the home page
 - [ ] create trends page
 - [ ] add euro support
 - [ ] allow importing data

@@ -16,7 +16,6 @@ import EditExpense from "./screens/EditExpense";
 import EditIncome from "./screens/EditIncome";
 import EditTransfer from "./screens/EditTransfer";
 import Errors from "./Errors";
-import Home from "./screens/Home";
 import NewAccount from "./screens/NewAccount";
 import NewCategory from "./screens/NewCategory";
 import NewExpense from "./screens/NewExpense";
@@ -118,16 +117,6 @@ function App() {
                 )}
               />
               <Route
-                path="/transactions"
-                component={() => {
-                  return (
-                    <Screen>
-                      <Transactions onError={onError} />
-                    </Screen>
-                  );
-                }}
-              />
-              <Route
                 path="/newTransfer"
                 component={({ history }) => (
                   <NewTransfer
@@ -196,11 +185,13 @@ function App() {
               <Route
                 path="/"
                 exact
-                component={() => (
-                  <Screen>
-                    <Home />
-                  </Screen>
-                )}
+                component={() => {
+                  return (
+                    <Screen>
+                      <Transactions onError={onError} />
+                    </Screen>
+                  );
+                }}
               />
               <Route
                 component={({ history }) => (

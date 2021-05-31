@@ -12,8 +12,7 @@ import {
 } from "@ionic/react";
 
 const routes = [
-  { name: "Home", route: "/" },
-  { name: "Transactions", route: "/transactions" },
+  { name: "Transactions", route: "/" },
   { name: "Trends", route: "/trends" },
   { name: "Accounts", route: "/accounts" },
   { name: "Categories", route: "/categories" },
