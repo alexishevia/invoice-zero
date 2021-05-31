@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { EventEmitter } from 'events';
-import { AmplifyAuthenticator, AmplifySignIn, AmplifySignOut } from '@aws-amplify/ui-react';
+import { AmplifyAuthenticator, AmplifySignIn } from '@aws-amplify/ui-react';
 import { AuthState, onAuthUIStateChange } from '@aws-amplify/ui-components';
 import { IonApp, IonContent } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { Switch } from "react-router";
 import { Route } from "react-router-dom";
 
+import Settings from "./screens/Settings";
 import Accounts from "./screens/Accounts";
 import Categories from "./screens/Categories";
 import EditAccount from "./screens/EditAccount";
@@ -15,6 +16,7 @@ import EditExpense from "./screens/EditExpense";
 import EditIncome from "./screens/EditIncome";
 import EditTransfer from "./screens/EditTransfer";
 import Errors from "./Errors";
+import Home from "./screens/Home";
 import NewAccount from "./screens/NewAccount";
 import NewCategory from "./screens/NewCategory";
 import NewExpense from "./screens/NewExpense";
@@ -183,11 +185,20 @@ function App() {
                 )}
               />
               <Route
+                path="/settings"
+                exact
+                component={() => (
+                  <Screen>
+                    <Settings />
+                  </Screen>
+                )}
+              />
+              <Route
                 path="/"
                 exact
                 component={() => (
                   <Screen>
-                    <AmplifySignOut />
+                    <Home />
                   </Screen>
                 )}
               />

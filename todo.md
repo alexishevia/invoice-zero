@@ -1,6 +1,4 @@
 # Roadmap
-- [ ] move sign out to settings page
-- [ ] add "clear all local data" to settings page
 - [ ] make "new expense" the home page
 - [ ] create trends page
 - [ ] add euro support
