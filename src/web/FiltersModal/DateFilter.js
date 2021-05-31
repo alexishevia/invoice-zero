@@ -20,7 +20,7 @@ export default function DateFilter({
         <IonDatetime
           value={fromDate}
           onIonChange={(evt) => {
-            setFromDate(evt.detail.value);
+            setFromDate(evt.detail.value.split('T')[0]);
           }}
         />
       </IonItem>
@@ -29,7 +29,7 @@ export default function DateFilter({
         <IonDatetime
           value={toDate}
           onIonChange={(evt) => {
-            setToDate(evt.detail.value);
+            setToDate(evt.detail.value.split('T')[0]);
           }}
         />
       </IonItem>

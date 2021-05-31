@@ -1,4 +1,4 @@
-import { DataStore } from '@aws-amplify/datastore'
+import { DataStore, Predicates } from '@aws-amplify/datastore'
 import { Expense } from '.';
 import { forEach } from './pagination';
 
@@ -49,6 +49,25 @@ export async function queryExpenses({
     .or(t => categoryIDs.reduce((query, id) => query.categoryID("eq", id), t))
   ));
   return expenses
+}
+
+export async function *iterateExpenses() {
+  let page = 0;
+  const itemsPerPage = 100;
+  const maxPages = 9999;
+  while (true) {
+    if (page >= maxPages) {
+      throw new Error('maxPages queried');
+    }
+    const expenses = await DataStore.query(Expense, Predicates.ALL, { page, limit: itemsPerPage });
+    if (!Array.isArray(expenses) || !expenses.length) {
+      return; // done
+    }
+    for (const expense of expenses) {
+      yield expense
+    }
+    page += 1;
+  }
 }
 
 export function onExpensesChange(func) {

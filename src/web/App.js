@@ -23,6 +23,7 @@ import NewIncome from "./screens/NewIncome";
 import NewTransfer from "./screens/NewTransfer";
 import NotFound from "./screens/NotFound";
 import Transactions from "./screens/Transactions";
+import Trends from "./screens/Trends";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -181,6 +182,17 @@ function App() {
                     <Settings />
                   </Screen>
                 )}
+              />
+              <Route
+                path="/trends"
+                exact
+                component={() => {
+                  return (
+                    <Screen>
+                      <Trends onError={onError} />
+                    </Screen>
+                  );
+                }}
               />
               <Route
                 path="/"

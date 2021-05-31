@@ -59,3 +59,17 @@ export function addMonths(date, nMonths) {
   result.setMonth(date.getMonth() + nMonths);
   return result;
 }
+
+export function getMonthsInRange(startDate, endDate) {
+  const months = [];
+  let date = monthStart(endDate);
+  while (date >= startDate) {
+    months.push({
+      name: getMonthStrFromDate(date),
+      fromDate: dateToDayStr(monthStart(date)),
+      toDate: dateToDayStr(monthEnd(date)),
+    });
+    date = addMonths(date, -1);
+  }
+  return months.reverse();
+}

@@ -113,19 +113,19 @@ export default function Transactions({ onError }) {
   }, [onError]);
 
   useEffect(() => {
-    const query = {
-      transactionTypes: activeFilters.transactionTypes,
-      fromDate: dateToDayStr(new Date(activeFilters.fromDate)),
-      toDate: dateToDayStr(new Date(activeFilters.toDate)),
-      accountIDs: (accounts || []).filter(
-        ({ id }) => (activeFilters.accountIds || {})[id] !== false
-      ).map((acc) => acc.id),
-      categoryIDs: (categories || []).filter(
-        ({ id }) => (activeFilters.categoryIds || {})[id] !== false
-      ).map((cat) => cat.id)
-    };
-
     async function fetchTransactions() {
+      const query = {
+        transactionTypes: activeFilters.transactionTypes,
+        fromDate: activeFilters.fromDate,
+        toDate: activeFilters.toDate,
+        accountIDs: (accounts || []).filter(
+          ({ id }) => (activeFilters.accountIds || {})[id] !== false
+        ).map((acc) => acc.id),
+        categoryIDs: (categories || []).filter(
+          ({ id }) => (activeFilters.categoryIds || {})[id] !== false
+        ).map((cat) => cat.id)
+      };
+
       try {
         setIsLoading(true);
         const [

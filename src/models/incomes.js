@@ -1,4 +1,4 @@
-import { DataStore } from '@aws-amplify/datastore'
+import { DataStore, Predicates } from '@aws-amplify/datastore'
 import { Income } from '.';
 import { forEach } from './pagination';
 
@@ -30,12 +30,8 @@ export async function getIncomes() {
   return transfers
 }
 
-export async function queryIncomes({
-  fromDate,
-  toDate,
-  accountIDs,
-  categoryIDs,
-}) {
+export async function queryIncomes(query) {
+  const { fromDate, toDate, accountIDs, categoryIDs } = query;
   if (accountIDs && accountIDs.length === 0) {
     return [];
   }
@@ -49,6 +45,25 @@ export async function queryIncomes({
     .or(t => categoryIDs.reduce((query, id) => query.categoryID("eq", id), t))
   ));
   return incomes
+}
+
+export async function *iterateIncomes() {
+  let page = 0;
+  const itemsPerPage = 100;
+  const maxPages = 9999;
+  while (true) {
+    if (page >= maxPages) {
+      throw new Error('maxPages queried');
+    }
+    const incomes = await DataStore.query(Income, Predicates.ALL, { page, limit: itemsPerPage });
+    if (!Array.isArray(incomes) || !incomes.length) {
+      return; // done
+    }
+    for (const income of incomes) {
+      yield income
+    }
+    page += 1;
+  }
 }
 
 export function onIncomesChange(func) {

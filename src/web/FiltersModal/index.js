@@ -83,7 +83,7 @@ export default function FiltersModal({ isOpen, accounts, categories, initialFilt
 
   function updateToDate(val) {
     setIsApplyVisible(true);
-    updateToDate(val);
+    setToDate(val);
   }
 
   return (
@@ -116,7 +116,14 @@ export default function FiltersModal({ isOpen, accounts, categories, initialFilt
             toDate={toDate}
             setToDate={updateToDate}
           />
-          <TypesFilter activeTypes={transactionTypes} setStatusForType={setStatusForType} />
+          {
+            transactionTypes ? (
+              <TypesFilter
+                activeTypes={transactionTypes}
+                setStatusForType={setStatusForType}
+              />
+            ) : <></>
+          }
           <AccountsFilter
             accounts={accounts}
             accountsStatus={accountIds}
@@ -144,7 +151,7 @@ FiltersModal.propTypes = {
     name: PropTypes.string.isRequired,
   })),
   initialFilters: PropTypes.shape({
-    transactionTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
+    transactionTypes: PropTypes.arrayOf(PropTypes.string),
     fromDate: PropTypes.string.isRequired,
     toDate: PropTypes.string.isRequired,
     accountIds: PropTypes.object.isRequired,
