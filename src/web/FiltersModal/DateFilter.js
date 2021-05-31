@@ -10,7 +10,7 @@ export default function DateFilter({
 }) {
   return (
     <>
-      <IonItemDivider className="ion-padding-top">
+      <IonItemDivider>
         <IonLabel color="primary">
           <h2>Transaction Date</h2>
         </IonLabel>

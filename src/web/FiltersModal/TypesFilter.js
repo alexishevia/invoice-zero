@@ -22,7 +22,7 @@ export default function TypesFilter({ activeTypes, setStatusForType }) {
 
   return (
     <>
-      <IonItem>
+      <IonItem className="ion-padding-top">
         <IonLabel color="primary">Transaction Type</IonLabel>
         <IonToggle checked={isAllToggled} onIonChange={toggleAll} />
       </IonItem>

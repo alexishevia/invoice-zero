@@ -36,6 +36,12 @@ export async function queryIncomes({
   accountIDs,
   categoryIDs,
 }) {
+  if (accountIDs && accountIDs.length === 0) {
+    return [];
+  }
+  if (categoryIDs && categoryIDs.length === 0) {
+    return [];
+  }
   const incomes = await DataStore.query(Income, t => (
     t.transactionDate("ge", fromDate)
     .transactionDate("le", toDate)

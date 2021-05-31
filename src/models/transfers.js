@@ -35,6 +35,9 @@ export async function queryTransfers({
   toDate,
   accountIDs,
 }) {
+  if (accountIDs && accountIDs.length === 0) {
+    return [];
+  }
   const transfers = await DataStore.query(Transfer, t => (
     t.transactionDate("ge", fromDate)
     .transactionDate("le", toDate)

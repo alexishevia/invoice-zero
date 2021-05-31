@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { IonItem, IonItemDivider, IonLabel, IonToggle } from "@ionic/react";
+import { IonItem, IonLabel, IonToggle } from "@ionic/react";
 
 function sortByName({ name: a }, { name: b }) {
   if (a > b) {
@@ -17,13 +17,23 @@ export default function CategoriesFilter({
   categoriesStatus,
   setStatusForCategory,
 }) {
+  const [isAllToggled, setIsAllToggled] = useState(true);
+
+  function toggleAll(evt) {
+    evt && evt.preventDefault();
+    const newVal = !isAllToggled;
+    setIsAllToggled(newVal);
+    categories.forEach(({ id }) => {
+      setStatusForCategory(id, newVal);
+    });
+  }
+
   return (
     <>
-      <IonItemDivider className="ion-padding-top">
-        <IonLabel color="primary">
-          <h2>Categories</h2>
-        </IonLabel>
-      </IonItemDivider>
+      <IonItem className="ion-padding-top">
+        <IonLabel color="primary">Categories</IonLabel>
+        <IonToggle checked={isAllToggled} onIonChange={toggleAll} />
+      </IonItem>
       {(categories || []).sort(sortByName).map(({ id, name }) => {
         const isActive = Object.hasOwnProperty.call(categoriesStatus, id)
           ? categoriesStatus[id]

@@ -110,13 +110,13 @@ export default function FiltersModal({ isOpen, accounts, categories, initialFilt
       </IonToolbar>
       <IonContent>
         <IonList>
-          <TypesFilter activeTypes={transactionTypes} setStatusForType={setStatusForType} />
           <DateFilter
             fromDate={fromDate}
             setFromDate={updateFromDate}
             toDate={toDate}
             setToDate={updateToDate}
           />
+          <TypesFilter activeTypes={transactionTypes} setStatusForType={setStatusForType} />
           <AccountsFilter
             accounts={accounts}
             accountsStatus={accountIds}
