@@ -50,7 +50,10 @@ CategoriesFilter.defaultProps = {
 };
 
 CategoriesFilter.propTypes = {
-  categories: PropTypes.arrayOf(PropTypes.shape({})),
+  categories: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+  })),
   categoriesStatus: PropTypes.shape({}),
   setStatusForCategory: PropTypes.func.isRequired,
 };

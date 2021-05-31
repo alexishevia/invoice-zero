@@ -50,7 +50,10 @@ AccountsFilter.defaultProps = {
 };
 
 AccountsFilter.propTypes = {
-  accounts: PropTypes.arrayOf(PropTypes.shape({})),
+  accounts: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+  })),
   accountsStatus: PropTypes.shape({}),
   setStatusForAccount: PropTypes.func.isRequired,
 };

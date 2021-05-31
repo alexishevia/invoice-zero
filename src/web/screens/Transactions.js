@@ -2,20 +2,13 @@ import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   IonButton,
-  IonButtons,
-  IonContent,
   IonIcon,
   IonItem,
   IonLabel,
-  IonList,
-  IonModal,
-  IonSearchbar,
-  IonTitle,
-  IonToolbar,
   IonLoading,
+  IonSearchbar,
 } from "@ionic/react";
 import {
-  chevronBackOutline,
   filterOutline,
   searchOutline,
 } from "ionicons/icons";
@@ -26,10 +19,7 @@ import { queryIncomes, onIncomesChange } from "../../models/incomes";
 import { queryExpenses, onExpensesChange } from "../../models/expenses";
 import TransactionsList from "../TransactionsList";
 import { dateToDayStr, monthStart, monthEnd } from "../../helpers/date";
-import TypesFilter from "../Filters/TypesFilter";
-import DateFilter from "../Filters/DateFilter";
-import AccountsFilter from "../Filters/AccountsFilter";
-import CategoriesFilter from "../Filters/CategoriesFilter";
+import FiltersModal from "../FiltersModal";
 
 function sortByLastChangedAt(a, b) {
   if (a._lastChangedAt > b._lastChangedAt) {
@@ -56,47 +46,29 @@ function filterBySearchText(searchText) {
   };
 }
 
-function unique(arr) {
-  return Array.from(new Set(arr));
-}
-
 export default function Transactions({ onError }) {
-  const [types, setTypes] = useState(["INCOME", "EXPENSE", "TRANSFER"]);
-  const [fromDate, setFromDate] = useState(dateToDayStr(monthStart()));
-  const [toDate, setToDate] = useState(dateToDayStr(monthEnd()));
+  const [activeFilters, setActiveFilters] = useState({
+    transactionTypes: ["INCOME", "EXPENSE", "TRANSFER"],
+    fromDate: dateToDayStr(monthStart()),
+    toDate: dateToDayStr(monthEnd()),
+    accountIds: {},
+    categoryIds: {},
+  });
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [accountsStatus, setAccountsStatus] = useState({});
-  const [categoriesStatus, setCategoriesStatus] = useState({});
   const [searchText, setSearchText] = useState("");
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  function setStatusForType(type, isActive) {
-    setTypes((prevTypes) =>
-      isActive
-        ? unique([...prevTypes, type])
-        : prevTypes.filter((t) => t !== type)
-    );
-  }
-
-  function setStatusForAccount(id, isActive) {
-    setAccountsStatus((prevStatus) => ({ ...prevStatus, [id]: isActive }));
-  }
-
-  function setStatusForCategory(id, isActive) {
-    setCategoriesStatus((prevStatus) => ({ ...prevStatus, [id]: isActive }));
-  }
-
   function handleOpenFiltersModal(evt) {
     evt.preventDefault();
     setIsFiltersModalOpen(true);
   }
 
-  function handleCloseFiltersModal(evt) {
-    evt.preventDefault();
+  function handleCloseFiltersModal(newFilters) {
+    setActiveFilters(newFilters);
     setIsFiltersModalOpen(false);
   }
 
@@ -139,13 +111,14 @@ export default function Transactions({ onError }) {
 
   useEffect(() => {
     const query = {
-      fromDate: dateToDayStr(new Date(fromDate)),
-      toDate: dateToDayStr(new Date(toDate)),
+      transactionTypes: activeFilters.transactionTypes,
+      fromDate: dateToDayStr(new Date(activeFilters.fromDate)),
+      toDate: dateToDayStr(new Date(activeFilters.toDate)),
       accountIDs: (accounts || []).filter(
-        ({ id }) => (accountsStatus || {})[id] !== false
+        ({ id }) => (activeFilters.accountIds || {})[id] !== false
       ).map((acc) => acc.id),
       categoryIDs: (categories || []).filter(
-        ({ id }) => (categoriesStatus || {})[id] !== false
+        ({ id }) => (activeFilters.categoryIds || {})[id] !== false
       ).map((cat) => cat.id)
     };
 
@@ -157,9 +130,9 @@ export default function Transactions({ onError }) {
           incomes,
           expenses
         ] = await Promise.all([
-          types.includes("TRANSFER") ? queryTransfers(query) : [],
-          types.includes("INCOME") ? queryIncomes(query) : [],
-          types.includes("EXPENSE") ? queryExpenses(query) : [],
+          query.transactionTypes.includes("TRANSFER") ? queryTransfers(query) : [],
+          query.transactionTypes.includes("INCOME") ? queryIncomes(query) : [],
+          query.transactionTypes.includes("EXPENSE") ? queryExpenses(query) : [],
         ]);
         setTransactions([
           ...transfers.map(t => ({ ...t, type: "TRANSFER" })),
@@ -182,53 +155,22 @@ export default function Transactions({ onError }) {
       expensesSubscription.unsubscribe()
     }
   }, [
-    types,
-    fromDate,
-    toDate,
+    activeFilters,
     accounts,
-    accountsStatus,
     categories,
-    categoriesStatus,
     onError,
   ]);
 
   return (
     <>
-      <IonModal
+      <IonLoading isOpen={isLoading} />
+      <FiltersModal
         isOpen={isFiltersModalOpen}
-        onDidDismiss={() => setIsFiltersModalOpen(false)}
-      >
-        <IonToolbar color="primary">
-          <IonButtons slot="start">
-            <IonButton onClick={handleCloseFiltersModal}>
-              <IonIcon icon={chevronBackOutline} />
-            </IonButton>
-          </IonButtons>
-          <IonTitle>Filters</IonTitle>
-        </IonToolbar>
-        <IonContent>
-          <IonLoading isOpen={isLoading} />
-          <IonList>
-            <TypesFilter types={types} setStatusForType={setStatusForType} />
-            <DateFilter
-              fromDate={fromDate}
-              setFromDate={setFromDate}
-              toDate={toDate}
-              setToDate={setToDate}
-            />
-            <AccountsFilter
-              accounts={accounts}
-              accountsStatus={accountsStatus}
-              setStatusForAccount={setStatusForAccount}
-            />
-            <CategoriesFilter
-              categories={categories}
-              categoriesStatus={categoriesStatus}
-              setStatusForCategory={setStatusForCategory}
-            />
-          </IonList>
-        </IonContent>
-      </IonModal>
+        accounts={accounts}
+        categories={categories}
+        initialFilters ={activeFilters}
+        onClose={handleCloseFiltersModal}
+      />
       <IonItem>
         <IonLabel>
           <h3>Transactions</h3>
