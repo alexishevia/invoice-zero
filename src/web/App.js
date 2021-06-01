@@ -7,7 +7,6 @@ import { IonReactRouter } from "@ionic/react-router";
 import { Switch } from "react-router";
 import { Route } from "react-router-dom";
 
-import Settings from "./screens/Settings";
 import Accounts from "./screens/Accounts";
 import Categories from "./screens/Categories";
 import EditAccount from "./screens/EditAccount";
@@ -22,6 +21,7 @@ import NewExpense from "./screens/NewExpense";
 import NewIncome from "./screens/NewIncome";
 import NewTransfer from "./screens/NewTransfer";
 import NotFound from "./screens/NotFound";
+import Settings from "./screens/Settings";
 import Transactions from "./screens/Transactions";
 import Trends from "./screens/Trends";
 

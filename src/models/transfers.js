@@ -1,4 +1,4 @@
-import { DataStore } from '@aws-amplify/datastore'
+import { DataStore, Predicates } from '@aws-amplify/datastore'
 import { Transfer } from '.';
 import { forEach } from './pagination';
 
@@ -45,6 +45,25 @@ export async function queryTransfers({
     .or(t => accountIDs.reduce((query, id) => query.toID("eq", id), t))
   ));
   return transfers
+}
+
+export async function *iterateTransfers() {
+  let page = 0;
+  const itemsPerPage = 100;
+  const maxPages = 9999;
+  while (true) {
+    if (page >= maxPages) {
+      throw new Error('maxPages queried');
+    }
+    const transfers = await DataStore.query(Transfer, Predicates.ALL, { page, limit: itemsPerPage });
+    if (!Array.isArray(transfers) || !transfers.length) {
+      return; // done
+    }
+    for (const transfer of transfers) {
+      yield transfer
+    }
+    page += 1;
+  }
 }
 
 export function onTransfersChange(func) {
