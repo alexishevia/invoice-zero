@@ -7,7 +7,6 @@ import {
   IonInput,
   IonItem,
   IonLabel,
-  IonLoading,
   IonPage,
   IonSelect,
   IonSelectOption,
@@ -66,16 +65,12 @@ export default function NewExpense({ onError, onClose }) {
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [accountBalances, setAccountBalances] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchAccounts() {
       try {
-        setIsLoading(true);
         setAccounts(await getAccounts());
-        setIsLoading(false);
       } catch(err){
-        setIsLoading(false);
         onError(err);
       }
     }
@@ -87,11 +82,8 @@ export default function NewExpense({ onError, onClose }) {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        setIsLoading(true);
         setCategories(await getCategories());
-        setIsLoading(false);
       } catch(err){
-        setIsLoading(false);
         onError(err);
       }
     }
@@ -121,12 +113,9 @@ export default function NewExpense({ onError, onClose }) {
         description,
         transactionDate,
       });
-      setIsLoading(true);
       await createExpense(expenseData);
-      setIsLoading(false);
       onClose();
     } catch (err) {
-      setIsLoading(false);
       onError(err);
     }
   }
@@ -139,7 +128,6 @@ export default function NewExpense({ onError, onClose }) {
   return (
     <IonPage id="main-content">
       <ModalToolbar title="New Expense" onClose={onClose} color="danger" />
-      <IonLoading isOpen={isLoading} />
       <IonContent>
         <form onSubmit={handleSubmit}>
           <IonItem>

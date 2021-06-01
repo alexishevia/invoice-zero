@@ -9,7 +9,6 @@ import {
   IonInput,
   IonItem,
   IonLabel,
-  IonLoading,
   IonPage,
   IonSelect,
   IonSelectOption,
@@ -65,16 +64,12 @@ export default function EditTransfer({ id, onError, onClose }) {
   const [accounts, setAccounts] = useState([]);
   const [accountBalances, setAccountBalances] = useState({});
   const [transfer, setTransfer] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchAccounts() {
       try {
-        setIsLoading(true);
         setAccounts(await getAccounts());
-        setIsLoading(false);
       } catch(err){
-        setIsLoading(false);
         onError(err);
       }
     }
@@ -97,11 +92,8 @@ export default function EditTransfer({ id, onError, onClose }) {
   useEffect(() => {
     async function fetchTransfer() {
       try {
-        setIsLoading(true);
         setTransfer(await getTransferByID(id));
-        setIsLoading(false);
       } catch(err) {
-        setIsLoading(false);
         onError(err);
       }
     }
@@ -128,12 +120,9 @@ export default function EditTransfer({ id, onError, onClose }) {
   async function handleDeleteConfirm() {
     try {
       setDeleteAlertOpen(false);
-      setIsLoading(true);
       await deleteTransfer(transfer)
-      setIsLoading(false);
       onClose();
     } catch (err) {
-      setIsLoading(false);
       onError(err);
     }
   }
@@ -141,17 +130,14 @@ export default function EditTransfer({ id, onError, onClose }) {
   async function handleSubmit(evt) {
     evt.preventDefault();
     try {
-      setIsLoading(true);
       await updateTransfer(transfer, buildTransferData({
         fromID: fromIDVal,
         toID: toIDVal,
         amount: amountVal,
         transactionDate: transactionDateVal,
       }));
-      setIsLoading(false);
       onClose();
     } catch (err) {
-      setIsLoading(false);
       onError(err);
     }
   }
@@ -171,7 +157,6 @@ export default function EditTransfer({ id, onError, onClose }) {
         endButton={endButton}
       />
       <IonContent>
-        <IonLoading isOpen={isLoading} />
         <form onSubmit={handleSubmit}>
           <IonAlert
             isOpen={isDeleteAlertOpen}

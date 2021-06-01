@@ -9,7 +9,6 @@ import {
   IonItem,
   IonLabel,
   IonPage,
-  IonLoading,
 } from "@ionic/react";
 import { trashOutline } from "ionicons/icons";
 import { getCategoryByID, updateCategory, deleteCategory } from '../../models/categories';
@@ -25,17 +24,13 @@ function buildcategoryData({ name }) {
 export default function Editcategory({ id, onClose, onError }) {
   const [category, setCategory] = useState({});
   const [name, setName] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
 
   useEffect(() => {
     async function fetchCategory() {
       try {
-        setIsLoading(true);
         setCategory(await getCategoryByID(id));
-        setIsLoading(false);
       } catch(err) {
-        setIsLoading(false);
         onError(err);
       }
     }
@@ -57,12 +52,9 @@ export default function Editcategory({ id, onClose, onError }) {
   async function handleDeleteConfirm() {
     try {
       setDeleteAlertOpen(false);
-      setIsLoading(true);
       await deleteCategory(category)
-      setIsLoading(false);
       onClose();
     } catch (err) {
-      setIsLoading(false);
       onError(err);
     }
   }
@@ -70,12 +62,9 @@ export default function Editcategory({ id, onClose, onError }) {
   async function handleSubmit(evt) {
     evt.preventDefault();
     try {
-      setIsLoading(true);
       await updateCategory(category, buildcategoryData({ name: nameVal }));
-      setIsLoading(false);
       onClose();
     } catch (err) {
-      setIsLoading(false);
       onError(err);
     }
   }
@@ -94,7 +83,6 @@ export default function Editcategory({ id, onClose, onError }) {
         endButton={endButton}
       />
       <IonContent>
-        <IonLoading isOpen={isLoading} />
         <form onSubmit={handleSubmit}>
           <IonAlert
             isOpen={isDeleteAlertOpen}

@@ -5,7 +5,6 @@ import {
   IonIcon,
   IonItem,
   IonLabel,
-  IonLoading,
   IonSearchbar,
 } from "@ionic/react";
 import {
@@ -60,7 +59,6 @@ export default function Transactions({ onError }) {
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   function handleOpenFiltersModal(evt) {
     evt.preventDefault();
@@ -83,11 +81,8 @@ export default function Transactions({ onError }) {
   useEffect(() => {
     async function fetchAccounts() {
       try {
-        setIsLoading(true);
         setAccounts(await getAccounts());
-        setIsLoading(false);
       } catch(err){
-        setIsLoading(false);
         onError(err);
       }
     }
@@ -99,11 +94,8 @@ export default function Transactions({ onError }) {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        setIsLoading(true);
         setCategories(await getCategories());
-        setIsLoading(false);
       } catch(err){
-        setIsLoading(false);
         onError(err);
       }
     }
@@ -127,7 +119,6 @@ export default function Transactions({ onError }) {
       };
 
       try {
-        setIsLoading(true);
         const [
           transfers,
           incomes,
@@ -142,9 +133,7 @@ export default function Transactions({ onError }) {
           ...incomes.map(i => ({ ...i, type: "INCOME" })),
           ...expenses.map(e => ({ ...e, type: "EXPENSE" })),
         ].sort(sortByLastChangedAt));
-        setIsLoading(false);
       } catch(err){
-        setIsLoading(false);
         onError(err);
       }
     }
@@ -166,7 +155,6 @@ export default function Transactions({ onError }) {
 
   return (
     <>
-      <IonLoading isOpen={isLoading} />
       <FiltersModal
         isOpen={isFiltersModalOpen}
         accounts={accounts}

@@ -7,7 +7,6 @@ import {
   IonItem,
   IonLabel,
   IonPage,
-  IonLoading,
 } from "@ionic/react";
 import { createAccount } from '../../models/accounts';
 import Validation from "../../helpers/Validation";
@@ -29,17 +28,13 @@ function buildAccountData({ name, initialBalance }) {
 export default function NewAccount({ onError, onClose }) {
   const [name, setName] = useState("");
   const [initialBalance, setInitialBalance] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(evt) {
     evt.preventDefault();
     try {
-      setIsLoading(true);
       await createAccount(buildAccountData({ name, initialBalance }));
-      setIsLoading(false);
       onClose();
     } catch (err) {
-      setIsLoading(false);
       onError(err);
     }
   }
@@ -52,7 +47,6 @@ export default function NewAccount({ onError, onClose }) {
   return (
     <IonPage id="main-content">
       <ModalToolbar title="New Account" onClose={onClose} />
-      <IonLoading isOpen={isLoading} />
       <IonContent>
         <form onSubmit={handleSubmit}>
           <IonItem>

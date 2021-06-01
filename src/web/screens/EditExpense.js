@@ -9,7 +9,6 @@ import {
   IonInput,
   IonItem,
   IonLabel,
-  IonLoading,
   IonPage,
   IonSelect,
   IonSelectOption,
@@ -71,16 +70,12 @@ export default function EditExpense({ id, onError, onClose }) {
   const [categories, setCategories] = useState([]);
   const [accountBalances, setAccountBalances] = useState({});
   const [expense, setExpense] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchAccounts() {
       try {
-        setIsLoading(true);
         setAccounts(await getAccounts());
-        setIsLoading(false);
       } catch(err){
-        setIsLoading(false);
         onError(err);
       }
     }
@@ -92,11 +87,8 @@ export default function EditExpense({ id, onError, onClose }) {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        setIsLoading(true);
         setCategories(await getCategories());
-        setIsLoading(false);
       } catch(err){
-        setIsLoading(false);
         onError(err);
       }
     }
@@ -119,11 +111,8 @@ export default function EditExpense({ id, onError, onClose }) {
   useEffect(() => {
     async function fetchExpense() {
       try {
-        setIsLoading(true);
         setExpense(await getExpenseByID(id));
-        setIsLoading(false);
       } catch(err) {
-        setIsLoading(false);
         onError(err);
       }
     }
@@ -153,12 +142,9 @@ export default function EditExpense({ id, onError, onClose }) {
   async function handleDeleteConfirm() {
     try {
       setDeleteAlertOpen(false);
-      setIsLoading(true);
       await deleteExpense(expense)
-      setIsLoading(false);
       onClose();
     } catch (err) {
-      setIsLoading(false);
       onError(err);
     }
   }
@@ -166,7 +152,6 @@ export default function EditExpense({ id, onError, onClose }) {
   async function handleSubmit(evt) {
     evt.preventDefault();
     try {
-      setIsLoading(true);
       await updateExpense(expense, buildExpenseData({
         accountID: accountIDVal,
         categoryID: categoryIDVal,
@@ -174,10 +159,8 @@ export default function EditExpense({ id, onError, onClose }) {
         description: descriptionVal,
         transactionDate: transactionDateVal,
       }));
-      setIsLoading(false);
       onClose();
     } catch (err) {
-      setIsLoading(false);
       onError(err);
     }
   }
@@ -197,7 +180,6 @@ export default function EditExpense({ id, onError, onClose }) {
         endButton={endButton}
       />
       <IonContent>
-        <IonLoading isOpen={isLoading} />
         <form onSubmit={handleSubmit}>
           <IonAlert
             isOpen={isDeleteAlertOpen}

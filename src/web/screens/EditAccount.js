@@ -8,7 +8,6 @@ import {
   IonInput,
   IonItem,
   IonLabel,
-  IonLoading,
   IonPage,
 } from "@ionic/react";
 import { trashOutline } from "ionicons/icons";
@@ -32,18 +31,14 @@ function buildAccountData({ name, initialBalance }) {
 export default function EditAccount({ id, onClose, onError }) {
   const [account, setAccount] = useState({});
   const [name, setName] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [initialBalance, setInitialBalance] = useState(null);
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
 
   useEffect(() => {
     async function fetchAccount() {
       try {
-        setIsLoading(true);
         setAccount(await getAccountByID(id));
-        setIsLoading(false);
       } catch(err) {
-        setIsLoading(false);
         onError(err);
       }
     }
@@ -66,12 +61,9 @@ export default function EditAccount({ id, onClose, onError }) {
   async function handleDeleteConfirm() {
     try {
       setDeleteAlertOpen(false);
-      setIsLoading(true);
       await deleteAccount(account);
-      setIsLoading(false);
       onClose();
     } catch (err) {
-      setIsLoading(false);
       onError(err);
     }
   }
@@ -79,15 +71,12 @@ export default function EditAccount({ id, onClose, onError }) {
   async function handleSubmit(evt) {
     evt.preventDefault();
     try {
-      setIsLoading(true);
       await updateAccount(account, buildAccountData({
         name: nameVal,
         initialBalance: initialBalanceVal,
       }));
-      setIsLoading(false);
       onClose();
     } catch (err) {
-      setIsLoading(false);
       onError(err);
     }
   }
@@ -106,7 +95,6 @@ export default function EditAccount({ id, onClose, onError }) {
         endButton={endButton}
       />
       <IonContent>
-        <IonLoading isOpen={isLoading} />
         <form onSubmit={handleSubmit}>
           <IonAlert
             isOpen={isDeleteAlertOpen}
