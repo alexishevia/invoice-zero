@@ -27,27 +27,17 @@ export async function getAccounts() {
 
 // getAccountBalances returns balances for all accounts provided.
 // returns an object with format:
-//    { [accountID]: accountBalance }
+//    { [accountID]: accountBalance, ... }
 // eg:
 //    { "accA": 5.29, "accB": 8.20, "accC": 150.00 }
-// export async function getAccountBalances(accounts) {
-//   const balances = accounts.reduce((memo, account) => ({
-//     ...memo, [account.id]: account.initialBalance
-//   }), {});
-
-//   await Promise.all([
-//     forEachTransfer(({fromID, toID, amount}) => {
-//       balances[fromID] = (balances[fromID] || 0) - amount;
-//       balances[toID] = (balances[toID] || 0) + amount;
-//     }),
-//     forEachIncome(({ accountID, amount }) => {
-//       balances[accountID] = (balances[accountID] || 0) + amount
-//     }),
-//     forEachExpense(({ accountID, amount }) => {
-//       balances[accountID] = (balances[accountID] || 0) - amount
-//     }),
-//   ])
-
-
-//   return balances;
-// }
+export async function getAccountBalances(accounts) {
+  const results = await Promise.all(accounts.map(({ id }) => (
+    api.get(`/accountBalance/${id}`)
+  )));
+  return results.reduce((memo, result) => {
+    Object.entries(result).forEach(([id, amount]) => {
+      memo[id] = amount;
+    });
+    return memo;
+  }, {});
+}

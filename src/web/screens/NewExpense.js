@@ -11,8 +11,8 @@ import {
   IonSelect,
   IonSelectOption,
 } from "@ionic/react";
-import { getAccounts, getAccountBalances, onAccountsChange } from "../../models/accounts";
-import { getCategories, onCategoriesChange } from "../../models/categories";
+import { getAccounts, getAccountBalances } from "../../models/accounts";
+import { getCategories } from "../../models/categories";
 import { createExpense } from "../../models/expenses";
 import { dateToDayStr, isValidDayStr } from "../../helpers/date";
 import Validation from "../../helpers/Validation";
@@ -75,8 +75,6 @@ export default function NewExpense({ onError, onClose }) {
       }
     }
     fetchAccounts();
-    const subscription = onAccountsChange(() => fetchAccounts());
-    return () => { subscription.unsubscribe() }
   }, [onError]);
 
   useEffect(() => {
@@ -88,8 +86,6 @@ export default function NewExpense({ onError, onClose }) {
       }
     }
     fetchCategories();
-    const subscription = onCategoriesChange(() => fetchCategories());
-    return () => { subscription.unsubscribe() }
   }, [onError]);
 
   useEffect(() => {

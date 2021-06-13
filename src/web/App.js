@@ -15,9 +15,9 @@ import EditCategory from "./screens/EditCategory";
 import Errors from "./Errors";
 import NewAccount from "./screens/NewAccount";
 import NewCategory from "./screens/NewCategory";
-// import NewExpense from "./screens/NewExpense";
-// import NewIncome from "./screens/NewIncome";
-// import NewTransfer from "./screens/NewTransfer";
+import NewExpense from "./screens/NewExpense";
+import NewIncome from "./screens/NewIncome";
+import NewTransfer from "./screens/NewTransfer";
 import NotFound from "./screens/NotFound";
 // import Settings from "./screens/Settings";
 // import Transactions from "./screens/Transactions";
@@ -60,33 +60,6 @@ function App() {
           <MainMenu />
           <Switch>
             { /*
-            <Route
-              path="/newTransfer"
-              component={({ history }) => (
-                <NewTransfer
-                  onError={onError}
-                  onClose={history.goBack}
-                />
-              )}
-            />
-            <Route
-              path="/newIncome"
-              component={({ history }) => (
-                <NewIncome
-                  onError={onError}
-                  onClose={history.goBack}
-                />
-              )}
-            />
-            <Route
-              path="/newExpense"
-              component={({ history }) => (
-                <NewExpense
-                  onError={onError}
-                  onClose={history.goBack}
-                />
-              )}
-            />
             <Route
               path="/editExpense/:id"
               component={({ history, match }) => (
@@ -138,6 +111,33 @@ function App() {
               }}
             />
             */ }
+            <Route
+              path="/newTransfer"
+              component={({ history }) => (
+                <NewTransfer
+                  onError={onError}
+                  onClose={history.goBack}
+                />
+              )}
+            />
+            <Route
+              path="/newIncome"
+              component={({ history }) => (
+                <NewIncome
+                  onError={onError}
+                  onClose={history.goBack}
+                />
+              )}
+            />
+            <Route
+              path="/newExpense"
+              component={({ history }) => (
+                <NewExpense
+                  onError={onError}
+                  onClose={history.goBack}
+                />
+              )}
+            />
             <Route
               path="/accounts"
               component={() => (

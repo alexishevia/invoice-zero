@@ -6,7 +6,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Getting Started
 
-1. Install NodeJS (v12.16.0+ preferred)
+1. Install NodeJS (v14.17.0+ preferred)
 2. Install dependencies with: `yarn install`
 3. Start the project with: `yarn start`
 

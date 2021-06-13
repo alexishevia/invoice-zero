@@ -1,7 +1,5 @@
 # Roadmap
-- [ ] CRUD for transfer
-- [ ] CRUD for income
-- [ ] CRUD for expense
+- [ ] allow editing/deleting transactions
 - [ ] allow importing data
 - [ ] add sync status
 - [ ] deploy to invoicezero.com

@@ -11,7 +11,7 @@ import {
   IonSelect,
   IonSelectOption,
 } from "@ionic/react";
-import { getAccounts, getAccountBalances, onAccountsChange } from "../../models/accounts";
+import { getAccounts, getAccountBalances } from "../../models/accounts";
 import { createTransfer } from "../../models/transfers";
 import { dateToDayStr, isValidDayStr } from "../../helpers/date";
 import Validation from "../../helpers/Validation";
@@ -69,8 +69,6 @@ export default function NewTransfer({ onError, onClose }) {
       }
     }
     fetchAccounts();
-    const subscription = onAccountsChange(() => fetchAccounts());
-    return () => { subscription.unsubscribe() }
   }, [onError]);
 
   useEffect(() => {
