@@ -11,11 +11,11 @@ import {
   filterOutline,
   searchOutline,
 } from "ionicons/icons";
-import { getAccounts, onAccountsChange } from "../../models/accounts";
-import { getCategories, onCategoriesChange } from "../../models/categories";
-import { queryTransfers, onTransfersChange } from "../../models/transfers";
-import { queryIncomes, onIncomesChange } from "../../models/incomes";
-import { queryExpenses, onExpensesChange } from "../../models/expenses";
+import { getAccounts } from "../../models/accounts";
+import { getCategories } from "../../models/categories";
+import { getTransfers } from "../../models/transfers";
+import { getIncomes } from "../../models/incomes";
+import { getExpenses } from "../../models/expenses";
 import TransactionsList from "../TransactionsList";
 import { dateToDayStr, monthStart, monthEnd } from "../../helpers/date";
 import FiltersModal from "../FiltersModal";
@@ -87,8 +87,6 @@ export default function Transactions({ onError }) {
       }
     }
     fetchAccounts();
-    const subscription = onAccountsChange(() => fetchAccounts());
-    return () => { subscription.unsubscribe() }
   }, [onError]);
 
   useEffect(() => {
@@ -100,14 +98,18 @@ export default function Transactions({ onError }) {
       }
     }
     fetchCategories();
-    const subscription = onCategoriesChange(() => fetchCategories());
-    return () => { subscription.unsubscribe() }
   }, [onError]);
 
   useEffect(() => {
     async function fetchTransactions() {
+      // wait until other data has loaded
+      for (const data of [accounts, categories]) {
+        if (data.length === 0) {
+          return;
+        }
+      }
+
       const query = {
-        transactionTypes: activeFilters.transactionTypes,
         fromDate: activeFilters.fromDate,
         toDate: activeFilters.toDate,
         accountIDs: (accounts || []).filter(
@@ -124,9 +126,9 @@ export default function Transactions({ onError }) {
           incomes,
           expenses
         ] = await Promise.all([
-          query.transactionTypes.includes("TRANSFER") ? queryTransfers(query) : [],
-          query.transactionTypes.includes("INCOME") ? queryIncomes(query) : [],
-          query.transactionTypes.includes("EXPENSE") ? queryExpenses(query) : [],
+          activeFilters.transactionTypes.includes("TRANSFER") ? getTransfers(query) : [],
+          activeFilters.transactionTypes.includes("INCOME") ? getIncomes(query) : [],
+          activeFilters.transactionTypes.includes("EXPENSE") ? getExpenses(query) : [],
         ]);
         setTransactions([
           ...transfers.map(t => ({ ...t, type: "TRANSFER" })),
@@ -138,14 +140,6 @@ export default function Transactions({ onError }) {
       }
     }
     fetchTransactions();
-    const transfersSubscription = onTransfersChange(() => fetchTransactions())
-    const incomesSubscription = onIncomesChange(() => fetchTransactions())
-    const expensesSubscription = onExpensesChange(() => fetchTransactions())
-    return () => {
-      transfersSubscription.unsubscribe()
-      incomesSubscription.unsubscribe()
-      expensesSubscription.unsubscribe()
-    }
   }, [
     activeFilters,
     accounts,

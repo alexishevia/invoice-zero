@@ -20,7 +20,7 @@ import NewIncome from "./screens/NewIncome";
 import NewTransfer from "./screens/NewTransfer";
 import NotFound from "./screens/NotFound";
 // import Settings from "./screens/Settings";
-// import Transactions from "./screens/Transactions";
+import Transactions from "./screens/Transactions";
 // import Trends from "./screens/Trends";
 
 /* Core CSS required for Ionic components to work properly */
@@ -192,8 +192,7 @@ function App() {
               component={() => {
                 return (
                   <Screen>
-                    <div>hello world</div>
-                    { /* <Transactions onError={onError} /> */ }
+                    <Transactions onError={onError} />
                   </Screen>
                 );
               }}

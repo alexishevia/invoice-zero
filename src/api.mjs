@@ -1,7 +1,11 @@
 const API_HOST = "http://localhost:8080";
 
-export async function get(path) {
-  const res = await fetch(`${API_HOST}${path}`, {
+export async function get(path, { query } = {}) {
+  const url = new URL(`${API_HOST}${path}`);
+  if (query) {
+    url.search = new URLSearchParams(query).toString();
+  }
+  const res = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },
   });
   return res.json();

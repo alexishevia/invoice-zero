@@ -23,10 +23,10 @@ export async function createExpense(data) {
 //   await DataStore.delete(expense)
 // }
 
-// export async function getExpenses() {
-//   const transfers = await DataStore.query(Expense);
-//   return transfers
-// }
+export async function getExpenses(query = {}) {
+  const expenses = await api.get('/expenses', { query });
+  return expenses;
+}
 
 // export async function queryExpenses({
 //   fromDate,
@@ -47,31 +47,4 @@ export async function createExpense(data) {
 //     .or(t => categoryIDs.reduce((query, id) => query.categoryID("eq", id), t))
 //   ));
 //   return expenses
-// }
-
-// export async function *iterateExpenses() {
-//   let page = 0;
-//   const itemsPerPage = 100;
-//   const maxPages = 9999;
-//   while (true) {
-//     if (page >= maxPages) {
-//       throw new Error('maxPages queried');
-//     }
-//     const expenses = await DataStore.query(Expense, Predicates.ALL, { page, limit: itemsPerPage });
-//     if (!Array.isArray(expenses) || !expenses.length) {
-//       return; // done
-//     }
-//     for (const expense of expenses) {
-//       yield expense
-//     }
-//     page += 1;
-//   }
-// }
-
-// export function onExpensesChange(func) {
-//   return DataStore.observe(Expense).subscribe(func)
-// }
-
-// export async function forEachExpense(func) {
-//   return forEach('Expense', Expense, func);
 // }

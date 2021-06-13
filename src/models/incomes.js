@@ -23,10 +23,10 @@ export async function createIncome(data) {
 //   await DataStore.delete(income)
 // }
 
-// export async function getIncomes() {
-//   const transfers = await DataStore.query(Income);
-//   return transfers
-// }
+export async function getIncomes(query = {}) {
+  const income = await api.get('/income', { query });
+  return income;
+}
 
 // export async function queryIncomes(query) {
 //   const { fromDate, toDate, accountIDs, categoryIDs } = query;
@@ -43,31 +43,4 @@ export async function createIncome(data) {
 //     .or(t => categoryIDs.reduce((query, id) => query.categoryID("eq", id), t))
 //   ));
 //   return incomes
-// }
-
-// export async function *iterateIncomes() {
-//   let page = 0;
-//   const itemsPerPage = 100;
-//   const maxPages = 9999;
-//   while (true) {
-//     if (page >= maxPages) {
-//       throw new Error('maxPages queried');
-//     }
-//     const incomes = await DataStore.query(Income, Predicates.ALL, { page, limit: itemsPerPage });
-//     if (!Array.isArray(incomes) || !incomes.length) {
-//       return; // done
-//     }
-//     for (const income of incomes) {
-//       yield income
-//     }
-//     page += 1;
-//   }
-// }
-
-// export function onIncomesChange(func) {
-//   return DataStore.observe(Income).subscribe(func)
-// }
-
-// export async function forEachIncome(func) {
-//   return forEach('Income', Income, func);
 // }
