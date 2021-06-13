@@ -5,15 +5,15 @@ import { IonReactRouter } from "@ionic/react-router";
 import { Switch } from "react-router";
 import { Route } from "react-router-dom";
 
-// import Accounts from "./screens/Accounts";
+import Accounts from "./screens/Accounts";
 import Categories from "./screens/Categories";
-// import EditAccount from "./screens/EditAccount";
+import EditAccount from "./screens/EditAccount";
 import EditCategory from "./screens/EditCategory";
 // import EditExpense from "./screens/EditExpense";
 // import EditIncome from "./screens/EditIncome";
 // import EditTransfer from "./screens/EditTransfer";
 import Errors from "./Errors";
-// import NewAccount from "./screens/NewAccount";
+import NewAccount from "./screens/NewAccount";
 import NewCategory from "./screens/NewCategory";
 // import NewExpense from "./screens/NewExpense";
 // import NewIncome from "./screens/NewIncome";
@@ -60,30 +60,6 @@ function App() {
           <MainMenu />
           <Switch>
             { /*
-            <Route
-              path="/accounts"
-              component={() => (
-                <Screen>
-                  <Accounts onError={onError} />
-                </Screen>
-              )}
-            />
-            <Route
-              path="/newAccount"
-              component={({ history }) => (
-                <NewAccount onError={onError} onClose={history.goBack} />
-              )}
-            />
-            <Route
-              path="/editAccount/:id"
-              component={({ history, match }) => (
-                <EditAccount
-                  id={match.params.id}
-                  onError={onError}
-                  onClose={history.goBack}
-                />
-              )}
-            />
             <Route
               path="/newTransfer"
               component={({ history }) => (
@@ -162,6 +138,30 @@ function App() {
               }}
             />
             */ }
+            <Route
+              path="/accounts"
+              component={() => (
+                <Screen>
+                  <Accounts onError={onError} />
+                </Screen>
+              )}
+            />
+            <Route
+              path="/newAccount"
+              component={({ history }) => (
+                <NewAccount onError={onError} onClose={history.goBack} />
+              )}
+            />
+            <Route
+              path="/editAccount/:id"
+              component={({ history, match }) => (
+                <EditAccount
+                  id={match.params.id}
+                  onError={onError}
+                  onClose={history.goBack}
+                />
+              )}
+            />
             <Route
               path="/categories"
               component={() => (

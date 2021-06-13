@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { IonLabel, IonItem } from "@ionic/react";
-import { getAccounts, onAccountsChange } from '../../../models/accounts';
+import { getAccounts } from '../../../models/accounts';
 import AccountsList from "./AccountsList";
 
 export default function Accounts({ onError }) {
@@ -16,8 +16,6 @@ export default function Accounts({ onError }) {
       }
     }
     fetchAccounts();
-    const subscription = onAccountsChange(() => fetchAccounts())
-    return () => { subscription.unsubscribe() }
   }, [onError]);
 
   return (
