@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { IonLabel, IonItem } from '@ionic/react';
-import { getCategories, onCategoriesChange } from '../../../models/categories';
+import { getCategories } from '../../../models/categories';
 import CategoriesList from './CategoriesList';
 
 export default function Categories({ onError }) {
@@ -16,8 +16,6 @@ export default function Categories({ onError }) {
       }
     }
     fetchCategories();
-    const subscription = onCategoriesChange(() => fetchCategories())
-    return () => { subscription.unsubscribe() }
   }, [onError]);
 
   return (

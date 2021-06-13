@@ -1,34 +1,23 @@
-import { DataStore } from '@aws-amplify/datastore'
-import { Category } from '.';
+import * as api from '../api.mjs';
 
 export async function createCategory(data) {
-  await DataStore.save(new Category(data));
+  await api.post('/categories', data);
 }
 
 export async function getCategoryByID(id) {
-  const category = await DataStore.query(Category, id);
+  const category = await api.get(`/categories/${id}`);
   return category
 }
 
 export async function updateCategory(category, newData) {
-  await DataStore.save(
-    Category.copyOf(category, updated => {
-      Object.entries(newData).forEach(([key, val]) => {
-        updated[key] = val
-      });
-    })
-  )
+  await api.patch(`/categories/${category.id}`, newData);
 }
 
 export async function deleteCategory(category) {
-  await DataStore.delete(category)
+  await api.del(`/categories/${category.id}`);
 }
 
 export async function getCategories() {
-  const accounts = await DataStore.query(Category);
-  return accounts
-}
-
-export function onCategoriesChange(func) {
-  return DataStore.observe(Category).subscribe(func)
+  const categories = await api.get('/categories');
+  return categories;
 }
