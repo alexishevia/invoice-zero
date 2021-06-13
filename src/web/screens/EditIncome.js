@@ -14,9 +14,9 @@ import {
   IonSelectOption,
 } from "@ionic/react";
 import { trashOutline } from "ionicons/icons";
-import { getAccounts, getAccountBalances, onAccountsChange } from "../../models/accounts";
+import { getAccounts, getAccountBalances } from "../../models/accounts";
 import { getIncomeByID, updateIncome, deleteIncome } from '../../models/incomes';
-import { getCategories, onCategoriesChange } from "../../models/categories";
+import { getCategories } from "../../models/categories";
 import { dateToDayStr, isValidDayStr } from "../../helpers/date";
 import Validation from "../../helpers/Validation";
 import ModalToolbar from "../ModalToolbar";
@@ -80,8 +80,6 @@ export default function EditIncome({ id, onError, onClose }) {
       }
     }
     fetchAccounts();
-    const subscription = onAccountsChange(() => fetchAccounts());
-    return () => { subscription.unsubscribe() }
   }, [onError]);
 
   useEffect(() => {
@@ -93,8 +91,6 @@ export default function EditIncome({ id, onError, onClose }) {
       }
     }
     fetchCategories();
-    const subscription = onCategoriesChange(() => fetchCategories());
-    return () => { subscription.unsubscribe() }
   }, [onError]);
 
   useEffect(() => {

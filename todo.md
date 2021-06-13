@@ -1,7 +1,6 @@
 # Roadmap
-- [ ] allow editing/deleting transactions
-- [ ] allow importing data
-- [ ] add sync status
+- [ ] add trends
+- [ ] allow switching backend on Settings
+- [ ] add loading indicator
 - [ ] deploy to invoicezero.com
 - [ ] add euro support
-- [ ] figure out multi-tenant

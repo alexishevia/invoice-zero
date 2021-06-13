@@ -9,9 +9,9 @@ import Accounts from "./screens/Accounts";
 import Categories from "./screens/Categories";
 import EditAccount from "./screens/EditAccount";
 import EditCategory from "./screens/EditCategory";
-// import EditExpense from "./screens/EditExpense";
-// import EditIncome from "./screens/EditIncome";
-// import EditTransfer from "./screens/EditTransfer";
+import EditExpense from "./screens/EditExpense";
+import EditIncome from "./screens/EditIncome";
+import EditTransfer from "./screens/EditTransfer";
 import Errors from "./Errors";
 import NewAccount from "./screens/NewAccount";
 import NewCategory from "./screens/NewCategory";
@@ -60,36 +60,6 @@ function App() {
           <MainMenu />
           <Switch>
             { /*
-            <Route
-              path="/editExpense/:id"
-              component={({ history, match }) => (
-                <EditExpense
-                  id={match.params.id}
-                  onError={onError}
-                  onClose={history.goBack}
-                />
-              )}
-            />
-            <Route
-              path="/editIncome/:id"
-              component={({ history, match }) => (
-                <EditIncome
-                  id={match.params.id}
-                  onError={onError}
-                  onClose={history.goBack}
-                />
-              )}
-            />
-            <Route
-              path="/editTransfer/:id"
-              component={({ history, match }) => (
-                <EditTransfer
-                  id={match.params.id}
-                  onError={onError}
-                  onClose={history.goBack}
-                />
-              )}
-            />
             <Route
               path="/settings"
               exact
@@ -180,6 +150,36 @@ function App() {
               path="/editCategory/:id"
               component={({ history, match }) => (
                 <EditCategory
+                  id={match.params.id}
+                  onError={onError}
+                  onClose={history.goBack}
+                />
+              )}
+            />
+            <Route
+              path="/editTransfer/:id"
+              component={({ history, match }) => (
+                <EditTransfer
+                  id={match.params.id}
+                  onError={onError}
+                  onClose={history.goBack}
+                />
+              )}
+            />
+            <Route
+              path="/editExpense/:id"
+              component={({ history, match }) => (
+                <EditExpense
+                  id={match.params.id}
+                  onError={onError}
+                  onClose={history.goBack}
+                />
+              )}
+            />
+            <Route
+              path="/editIncome/:id"
+              component={({ history, match }) => (
+                <EditIncome
                   id={match.params.id}
                   onError={onError}
                   onClose={history.goBack}

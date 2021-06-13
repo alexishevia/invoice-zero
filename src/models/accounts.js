@@ -1,7 +1,4 @@
 import * as api from '../api.mjs';
-// import { forEachTransfer } from './transfers';
-// import { forEachIncome } from './incomes';
-// import { forEachExpense } from './expenses';
 
 export async function createAccount(data) {
   await api.post('/accounts', data);

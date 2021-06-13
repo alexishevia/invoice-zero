@@ -14,7 +14,7 @@ import {
   IonSelectOption,
 } from "@ionic/react";
 import { trashOutline } from "ionicons/icons";
-import { getAccounts, getAccountBalances, onAccountsChange } from "../../models/accounts";
+import { getAccounts, getAccountBalances } from "../../models/accounts";
 import { getTransferByID, updateTransfer, deleteTransfer } from '../../models/transfers';
 import { dateToDayStr, isValidDayStr } from "../../helpers/date";
 import Validation from "../../helpers/Validation";
@@ -74,8 +74,6 @@ export default function EditTransfer({ id, onError, onClose }) {
       }
     }
     fetchAccounts();
-    const subscription = onAccountsChange(() => fetchAccounts());
-    return () => { subscription.unsubscribe() }
   }, [onError]);
 
   useEffect(() => {
