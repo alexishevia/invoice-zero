@@ -25,6 +25,13 @@ function mustBeNumber({ exists, value, failed }) {
   }
 }
 
+function mustBeInteger({ exists, value, failed }) {
+  if (!exists) return;
+  if (!Number.isInteger(value)) {
+    failed("must be an integer");
+  }
+}
+
 function mustBeBoolean({ value, failed }) {
   if (typeof value !== "boolean") {
     failed("must be a boolean");
@@ -96,6 +103,11 @@ export default class Validation {
 
   number() {
     mustBeNumber(this.props);
+    return this;
+  }
+
+  integer() {
+    mustBeInteger(this.props);
     return this;
   }
 

@@ -21,7 +21,7 @@ import NewTransfer from "./screens/NewTransfer";
 import NotFound from "./screens/NotFound";
 // import Settings from "./screens/Settings";
 import Transactions from "./screens/Transactions";
-// import Trends from "./screens/Trends";
+import Trends from "./screens/Trends";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -69,6 +69,7 @@ function App() {
                 </Screen>
               )}
             />
+            */ }
             <Route
               path="/trends"
               exact
@@ -80,7 +81,6 @@ function App() {
                 );
               }}
             />
-            */ }
             <Route
               path="/newTransfer"
               component={({ history }) => (

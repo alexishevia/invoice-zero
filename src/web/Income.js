@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { IonItem, IonLabel, IonNote } from "@ionic/react";
+import { centsToDollar as toDollar } from "../helpers/currency";
 
 function getAccountName(accounts, id) {
   const account = accounts.find((acc) => acc.id === id);
@@ -32,7 +33,7 @@ export default function Income({ income, accounts, categories }) {
     >
       <IonLabel>
         <p>
-          <IonNote color="success">${(amount || 0).toFixed(2)}</IonNote>
+          <IonNote color="success">${toDollar(amount)}</IonNote>
           <br />
           {categoryLabel} =&gt; {accountLabel}
           <br />

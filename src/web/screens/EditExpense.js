@@ -13,8 +13,10 @@ import {
   IonSelect,
   IonSelectOption,
 } from "@ionic/react";
+import { strToCents, centsToDollar } from '../../helpers/currency';
 import { trashOutline } from "ionicons/icons";
-import { getAccounts, getAccountBalances } from "../../models/accounts";
+import { getAccounts } from "../../models/accounts";
+import { getStats } from "../../models/stats";
 import { getExpenseByID, updateExpense, deleteExpense } from '../../models/expenses';
 import { getCategories } from "../../models/categories";
 import { dateToDayStr, isValidDayStr } from "../../helpers/date";
@@ -45,14 +47,14 @@ function buildExpenseData({
   const expenseData = {
     accountID,
     categoryID,
-    amount: parseFloat(amount, 10),
+    amount: strToCents(amount),
     description: description || "",
     transactionDate: isValidDayStr(transactionDate) ? transactionDate : today(),
   };
 
   new Validation(expenseData, "accountID").required().string().notEmpty();
   new Validation(expenseData, "categoryID").required().string().notEmpty();
-  new Validation(expenseData, "amount").required().number().biggerThan(0);
+  new Validation(expenseData, "amount").required().integer().biggerThan(0);
   new Validation(expenseData, "description").string();
   new Validation(expenseData, "transactionDate").required().dayString();
 
@@ -94,9 +96,18 @@ export default function EditExpense({ id, onError, onClose }) {
   }, [onError]);
 
   useEffect(() => {
+    if (accounts.length === 0) { // wait until accounts are loaded
+      return;
+    }
     async function fetchAccountBalances() {
       try {
-        setAccountBalances(await getAccountBalances(accounts));
+        const stats = await getStats();
+        setAccountBalances(
+          Object.entries(stats.perAccount).reduce((memo, [id, vals]) => {
+            memo[id] = centsToDollar(vals.currentBalance);
+            return memo;
+          }, {})
+        );
       } catch(err){
         onError(err);
       }
@@ -115,7 +126,7 @@ export default function EditExpense({ id, onError, onClose }) {
     fetchExpense();
   }, [id, onError]);
 
-  const amountVal = amount ?? expense?.amount;
+  const amountVal = amount ?? centsToDollar(expense?.amount);
   const accountIDVal =
     accountID ??
     (accounts || []).find((acct) => acct.id === expense?.accountID)?.id;
@@ -232,7 +243,8 @@ export default function EditExpense({ id, onError, onClose }) {
               value={amountVal}
               placeholder="$"
               onIonChange={(evt) => {
-                setAmount(evt.detail.value);
+                const cents = strToCents(evt.detail.value);
+                setAmount(centsToDollar(cents));
               }}
               required
             />

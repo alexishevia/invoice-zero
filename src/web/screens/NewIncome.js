@@ -11,7 +11,9 @@ import {
   IonSelect,
   IonSelectOption,
 } from "@ionic/react";
-import { getAccounts, getAccountBalances } from "../../models/accounts";
+import { strToCents, centsToDollar } from '../../helpers/currency';
+import { getAccounts } from "../../models/accounts";
+import { getStats } from "../../models/stats";
 import { getCategories } from "../../models/categories";
 import { createIncome } from "../../models/incomes";
 import { dateToDayStr, isValidDayStr } from "../../helpers/date";
@@ -42,14 +44,14 @@ function buildIncomeData({
   const incomeData = {
     accountID,
     categoryID,
-    amount: parseFloat(amount, 10),
+    amount: strToCents(amount),
     description: description || "",
     transactionDate: isValidDayStr(transactionDate) ? transactionDate : today(),
   };
 
   new Validation(incomeData, "accountID").required().string().notEmpty();
   new Validation(incomeData, "categoryID").required().string().notEmpty();
-  new Validation(incomeData, "amount").required().number().biggerThan(0);
+  new Validation(incomeData, "amount").required().integer().biggerThan(0);
   new Validation(incomeData, "description").string();
   new Validation(incomeData, "transactionDate").required().dayString();
 
@@ -89,9 +91,18 @@ export default function NewIncome({ onError, onClose }) {
   }, [onError]);
 
   useEffect(() => {
+    if (accounts.length === 0) { // wait until accounts are loaded
+      return;
+    }
     async function fetchAccountBalances() {
       try {
-        setAccountBalances(await getAccountBalances(accounts));
+        const stats = await getStats();
+        setAccountBalances(
+          Object.entries(stats.perAccount).reduce((memo, [id, vals]) => {
+            memo[id] = centsToDollar(vals.currentBalance);
+            return memo;
+          }, {})
+        );
       } catch(err){
         onError(err);
       }
@@ -134,7 +145,8 @@ export default function NewIncome({ onError, onClose }) {
               value={amount}
               placeholder="$"
               onIonChange={(evt) => {
-                setAmount(evt.detail.value);
+                const cents = strToCents(evt.detail.value);
+                setAmount(centsToDollar(cents));
               }}
               required
             />

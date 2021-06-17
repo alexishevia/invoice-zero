@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { IonList, IonItem, IonLabel, IonNote } from "@ionic/react";
+import { centsToDollar as toDollar } from "../../../helpers/currency";
 
 function Account({ account }) {
   const { id, name, initialBalance, balance } = account;
@@ -10,11 +11,11 @@ function Account({ account }) {
         <p>
           <IonNote color="primary">{name}</IonNote>
           <br />
-          Initial Balance: ${(initialBalance || 0).toFixed(2)}
+          Initial Balance: ${toDollar(initialBalance)}
           {typeof balance === "number" && !Number.isNaN(balance) ? (
             <>
               <br />
-              Current Balance: ${(balance || 0).toFixed(2)}
+              Current Balance: ${toDollar(balance)}
             </>
           ) : null}
         </p>

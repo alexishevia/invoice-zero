@@ -14,22 +14,16 @@ import {
   monthEnd,
   monthStart,
   substractMonths,
+  getMonthStrFromDate,
   getMonthsInRange,
 } from "../../../helpers/date";
-import { getAccounts, onAccountsChange } from "../../../models/accounts";
-import { getCategories, onCategoriesChange } from "../../../models/categories";
-import { iterateIncomes } from "../../../models/incomes";
-import { iterateExpenses } from "../../../models/expenses";
-import { iterateTransfers } from "../../../models/transfers";
+import { getAccounts } from "../../../models/accounts";
+import { getCategories } from "../../../models/categories";
+import { getStats } from "../../../models/stats.mjs";
 import FiltersModal from "../../FiltersModal";
 import AccountBalances from "./AccountBalances";
 import IncomeVsExpenses from "./IncomeVsExpenses";
 import ExpensesByMonth from "./ExpensesByMonth";
-
-// asMoneyFloat truncates a float to 2 decimal points
-function asMoneyFloat(num) {
-  return Number.parseFloat(num.toFixed(2), 10);
-}
 
 export default function Trends({ onError }) {
   const today = new Date();
@@ -88,8 +82,6 @@ export default function Trends({ onError }) {
       }
     }
     fetchAccounts();
-    const subscription = onAccountsChange(() => fetchAccounts());
-    return () => { subscription.unsubscribe() }
   }, [onError]);
 
   useEffect(() => {
@@ -101,10 +93,65 @@ export default function Trends({ onError }) {
       }
     }
     fetchCategories();
-    const subscription = onCategoriesChange(() => fetchCategories());
-    return () => { subscription.unsubscribe() }
   }, [onError]);
 
+  useEffect(() => {
+    // wait until accounts and categories have loaded
+    if (!accounts.length || !categories.length) {
+      return;
+    }
+
+    let cancelled = false;
+    async function fetchStats() {
+      const stats = await getStats();
+      if (cancelled) { return; }
+      setIncomeByMonth(
+        Object.entries(stats.global.income.byMonth).reduce(
+          (memo, [month, val]) => ({
+            ...memo,
+            [month]: val / 100.0,
+          }),
+          {}
+        )
+      );
+      setExpensesByMonth(
+        Object.entries(stats.global.expenses.byMonth).reduce(
+          (memo, [month, val]) => ({
+            ...memo,
+            [month]: val / 100.0,
+          }),
+          {}
+        )
+      );
+      setAccountBalances(
+        Object.entries(stats.perAccount).reduce((memo, [id, vals]) => {
+          memo[id] = vals.currentBalance / 100.0;
+          return memo;
+        }, {})
+      );
+      const currentMonth = getMonthStrFromDate(new Date());
+      setAccountMonthlyExpenses(
+        Object.entries(stats.perAccount).reduce((memo, [id, vals]) => {
+          memo[id] = vals.expenses.byMonth[currentMonth] / 100.0;
+          return memo;
+        }, {})
+      );
+      setExpensesByCategory(
+        Object.entries(stats.perCategory).reduce((memo, [id, vals]) => {
+          const category = categories.find(c => c.id === id);
+          memo[category.name] = Object.entries(vals.expenses.byMonth).reduce((mem, [month, cents]) => {
+            mem[month] = cents / 100.0;
+            return mem;
+          }, {});
+          return memo;
+        }, {})
+      );
+    }
+    fetchStats();
+    return () => { cancelled = true; };
+  }, [ accounts, categories, onError ]);
+
+  /*
   useEffect(() => {
     // wait until accounts and categories have loaded
     if (!accounts.length || !categories.length) {
@@ -142,74 +189,8 @@ export default function Trends({ onError }) {
 
     let cancelled = false;
 
-    function matchesFilters({ transactionDate, accountID, categoryID }) {
-      return (
-        activeFilters.fromDate <= transactionDate &&
-        transactionDate <= activeFilters.toDate &&
-        activeFilters.accountIds[accountID] !== false &&
-        activeFilters.categoryIds[categoryID] !== false
-      )
-    }
-
-    async function iterateThroughIncomes() {
-      for await (const income of iterateIncomes()) {
-        if (cancelled) { return; }
-
-        const { transactionDate, accountID, amount } = income;
-
-        balances[accountID] = (balances[accountID] || 0) + amount
-
-        if (!matchesFilters(income)) {
-          continue;
-        }
-
-        const month = transactionDate.substr(0, 7);
-        incomeByMonthResult[month] += amount;
-      }
-    }
-
-    async function iterateThroughExpenses() {
-      for await (const expense of iterateExpenses()) {
-        if (cancelled) { return; }
-
-        const { transactionDate, amount, accountID, categoryID } = expense;
-
-        balances[accountID] = (balances[accountID] || 0) - amount
-
-        if(transactionDate >= mStart && transactionDate <= mEnd) {
-          monthlyExpenses[accountID] = (monthlyExpenses[accountID] || 0) + amount
-        }
-
-        if (!matchesFilters(expense)) {
-          continue;
-        }
-
-        const month = transactionDate.substr(0, 7);
-        expensesByMonthResult[month] += amount;
-        const category = categories.find((cat) => cat.id === categoryID);
-        const categoryName = (category && category.name) ? category.name : "No Category";
-        if (!expensesByCategoryResult[categoryName]) {
-          expensesByCategoryResult[categoryName] = { ...monthsObj };
-        }
-        expensesByCategoryResult[categoryName][month] += amount;
-      }
-    }
-
-    async function iterateThroughTransfers() {
-      for await (const transfer of iterateTransfers()) {
-        if (cancelled) { return; }
-        const { fromID, toID, amount } = transfer;
-        balances[fromID] = (balances[fromID] || 0) - amount;
-        balances[toID] = (balances[toID] || 0) + amount;
-      }
-    }
-
     async function fetchGraphData() {
-      await Promise.all([
-        iterateThroughIncomes(),
-        iterateThroughExpenses(),
-        iterateThroughTransfers(),
-      ]);
+      await
       if (cancelled) { return; }
       setAccountBalances(balances);
       setAccountMonthlyExpenses(monthlyExpenses);
@@ -255,6 +236,7 @@ export default function Trends({ onError }) {
     categories,
     onError,
   ]);
+  */
 
   return (
     <div style={{marginBottom: '5em' }}>

@@ -13,8 +13,10 @@ import {
   IonSelect,
   IonSelectOption,
 } from "@ionic/react";
+import { strToCents, centsToDollar } from '../../helpers/currency';
 import { trashOutline } from "ionicons/icons";
-import { getAccounts, getAccountBalances } from "../../models/accounts";
+import { getAccounts } from "../../models/accounts";
+import { getStats } from "../../models/stats";
 import { getTransferByID, updateTransfer, deleteTransfer } from '../../models/transfers';
 import { dateToDayStr, isValidDayStr } from "../../helpers/date";
 import Validation from "../../helpers/Validation";
@@ -43,13 +45,13 @@ function buildTransferData({
   const transferData = {
     fromID,
     toID,
-    amount: parseFloat(amount, 10),
+    amount: strToCents(amount),
     transactionDate: isValidDayStr(transactionDate) ? transactionDate : today(),
   };
 
   new Validation(transferData, "fromID").required().string().notEmpty();
   new Validation(transferData, "toID").required().string().notEmpty();
-  new Validation(transferData, "amount").required().number().biggerThan(0);
+  new Validation(transferData, "amount").required().integer().biggerThan(0);
   new Validation(transferData, "transactionDate").required().dayString();
 
   return transferData;
@@ -77,9 +79,18 @@ export default function EditTransfer({ id, onError, onClose }) {
   }, [onError]);
 
   useEffect(() => {
+    if (accounts.length === 0) { // wait until accounts are loaded
+      return;
+    }
     async function fetchAccountBalances() {
       try {
-        setAccountBalances(await getAccountBalances(accounts));
+        const stats = await getStats();
+        setAccountBalances(
+          Object.entries(stats.perAccount).reduce((memo, [id, vals]) => {
+            memo[id] = centsToDollar(vals.currentBalance);
+            return memo;
+          }, {})
+        );
       } catch(err){
         onError(err);
       }
@@ -98,7 +109,7 @@ export default function EditTransfer({ id, onError, onClose }) {
     fetchTransfer();
   }, [id, onError]);
 
-  const amountVal = amount ?? transfer?.amount;
+  const amountVal = amount ?? centsToDollar(transfer?.amount);
   const fromIDVal =
     fromID ?? (accounts || []).find((acct) => acct.id === transfer?.fromID)?.id;
   const toIDVal =
@@ -212,7 +223,8 @@ export default function EditTransfer({ id, onError, onClose }) {
               value={amountVal}
               placeholder="$"
               onIonChange={(evt) => {
-                setAmount(evt.detail.value);
+                const cents = strToCents(evt.detail.value);
+                setAmount(centsToDollar(cents));
               }}
               required
             />

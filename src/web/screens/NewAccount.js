@@ -8,6 +8,7 @@ import {
   IonLabel,
   IonPage,
 } from "@ionic/react";
+import { strToCents, centsToDollar } from '../../helpers/currency';
 import { createAccount } from '../../models/accounts';
 import Validation from "../../helpers/Validation";
 import ModalToolbar from "../ModalToolbar";
@@ -15,19 +16,19 @@ import ModalToolbar from "../ModalToolbar";
 function buildAccountData({ name, initialBalance }) {
   const accountData = {
     name,
-    initialBalance: parseFloat(initialBalance, 10),
+    initialBalance: strToCents(initialBalance),
   };
   new Validation(accountData, "name").required().string().notEmpty();
   new Validation(accountData, "initialBalance")
     .required()
-    .number()
+    .integer()
     .biggerOrEqualThan(0);
   return accountData;
 }
 
 export default function NewAccount({ onError, onClose }) {
   const [name, setName] = useState("");
-  const [initialBalance, setInitialBalance] = useState(0);
+  const [initialBalance, setInitialBalance] = useState('0.00');
 
   async function handleSubmit(evt) {
     evt.preventDefault();
@@ -65,9 +66,9 @@ export default function NewAccount({ onError, onClose }) {
               type="number"
               step="0.01"
               value={initialBalance}
-              placeholder="$"
               onIonChange={(evt) => {
-                setInitialBalance(evt.detail.value);
+                const cents = strToCents(evt.detail.value);
+                setInitialBalance(centsToDollar(cents));
               }}
               required
             />

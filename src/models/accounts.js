@@ -1,4 +1,5 @@
 import * as api from '../api.mjs';
+import { dateToDayStr, monthStart, monthEnd } from '../helpers/date';
 
 export async function createAccount(data) {
   await api.post('/accounts', data);
@@ -20,21 +21,4 @@ export async function deleteAccount(account) {
 export async function getAccounts() {
   const accounts = await api.get('/accounts');
   return accounts;
-}
-
-// getAccountBalances returns balances for all accounts provided.
-// returns an object with format:
-//    { [accountID]: accountBalance, ... }
-// eg:
-//    { "accA": 5.29, "accB": 8.20, "accC": 150.00 }
-export async function getAccountBalances(accounts) {
-  const results = await Promise.all(accounts.map(({ id }) => (
-    api.get(`/accountBalance/${id}`)
-  )));
-  return results.reduce((memo, result) => {
-    Object.entries(result).forEach(([id, amount]) => {
-      memo[id] = amount;
-    });
-    return memo;
-  }, {});
 }

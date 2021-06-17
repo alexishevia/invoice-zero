@@ -11,6 +11,7 @@ import {
   IonPage,
 } from "@ionic/react";
 import { trashOutline } from "ionicons/icons";
+import { strToCents, centsToDollar } from '../../helpers/currency';
 import { getAccountByID, updateAccount, deleteAccount } from '../../models/accounts';
 import Validation from "../../helpers/Validation";
 import ModalToolbar from "../ModalToolbar";
@@ -18,12 +19,12 @@ import ModalToolbar from "../ModalToolbar";
 function buildAccountData({ name, initialBalance }) {
   const accountData = {
     name,
-    initialBalance: parseFloat(initialBalance, 10),
+    initialBalance: strToCents(initialBalance),
   };
   new Validation(accountData, "name").required().string().notEmpty();
   new Validation(accountData, "initialBalance")
     .required()
-    .number()
+    .integer()
     .biggerOrEqualThan(0);
   return accountData;
 }
@@ -46,7 +47,7 @@ export default function EditAccount({ id, onClose, onError }) {
   }, [id, onError]);
 
   const nameVal = name ?? account?.name;
-  const initialBalanceVal = initialBalance ?? account?.initialBalance;
+  const initialBalanceVal = initialBalance ?? centsToDollar(account?.initialBalance);
 
   function handleCancel(evt) {
     evt.preventDefault();
@@ -124,7 +125,8 @@ export default function EditAccount({ id, onClose, onError }) {
               value={initialBalanceVal}
               placeholder="$"
               onIonChange={(evt) => {
-                setInitialBalance(evt.detail.value);
+                const cents = strToCents(evt.detail.value);
+                setInitialBalance(centsToDollar(cents));
               }}
               required
             />
