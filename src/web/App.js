@@ -19,7 +19,7 @@ import NewExpense from "./screens/NewExpense";
 import NewIncome from "./screens/NewIncome";
 import NewTransfer from "./screens/NewTransfer";
 import NotFound from "./screens/NotFound";
-// import Settings from "./screens/Settings";
+import Settings from "./screens/Settings";
 import Transactions from "./screens/Transactions";
 import Trends from "./screens/Trends";
 
@@ -59,17 +59,6 @@ function App() {
         <IonReactRouter>
           <MainMenu />
           <Switch>
-            { /*
-            <Route
-              path="/settings"
-              exact
-              component={() => (
-                <Screen>
-                  <Settings />
-                </Screen>
-              )}
-            />
-            */ }
             <Route
               path="/trends"
               exact
@@ -184,6 +173,15 @@ function App() {
                   onError={onError}
                   onClose={history.goBack}
                 />
+              )}
+            />
+            <Route
+              path="/settings"
+              exact
+              component={() => (
+                <Screen>
+                  <Settings onError={onError} />
+                </Screen>
               )}
             />
             <Route
