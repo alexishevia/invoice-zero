@@ -2,7 +2,13 @@
 
 Invoice Zero is a personal finance app. 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), and runs in AWS Amplify.
+This repo has the UI for Invoice Zero, which is hosted on https://invoicezero.com
+
+Note: The UI will not work correctly until you configure the API settings on https://invoicezero.com/settings
+
+Related: https://github.com/alexishevia/invoice-zero-api
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Getting Started
 
