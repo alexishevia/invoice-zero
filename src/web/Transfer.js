@@ -8,7 +8,7 @@ function getAccountName(accounts, id) {
   return account && account.name ? account.name : "";
 }
 
-export default function Transfer({ transfer, accounts }) {
+export default function Transfer({ transfer, accounts, style }) {
   const { id, amount, transactionDate, fromID, toID } = transfer;
   const fromLabel = getAccountName(accounts, fromID);
   const toLabel = getAccountName(accounts, toID);
@@ -16,6 +16,7 @@ export default function Transfer({ transfer, accounts }) {
   return (
     <IonItem
       className="TransactionsListItem"
+      style={style}
       button
       routerLink={`/editTransfer/${id}`}
     >

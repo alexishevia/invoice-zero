@@ -1,3 +1,7 @@
+.TransactionsList {
+  height: calc(100vh - 7em);
+}
+
 .TransactionsListItemDate {
   font-size: 0.95em;
   color: #919191;

@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { IonList } from "@ionic/react";
+import { List, AutoSizer } from "react-virtualized";
 import Expense from "../Expense";
 import Income from "../Income";
 import Transfer from "../Transfer";
@@ -13,42 +13,56 @@ function TransactionsList({ transactions, accounts, categories }) {
   }
 
   return (
-    <IonList className="TransactionsList">
-      {transactions.map((transaction) => {
-        switch (transaction.type) {
-          case "INCOME":
-            return (
-              <Income
-                key={transaction.id}
-                income={transaction}
-                accounts={accounts}
-                categories={categories}
-              />
-            );
-          case "EXPENSE":
-            return (
-              <Expense
-                key={transaction.id}
-                expense={transaction}
-                accounts={accounts}
-                categories={categories}
-              />
-            );
-          case "TRANSFER":
-            return (
-              <Transfer
-                key={transaction.id}
-                transfer={transaction}
-                accounts={accounts}
-                categories={categories}
-              />
-            );
-          default:
-            console.warn(`Transaction with unknown type: ${transaction.type}`);
-            return null;
+    <div className="TransactionsList">
+    <AutoSizer>
+    { ({ width, height}) => (
+      <List
+        width={width}
+        height={height}
+        rowHeight={95}
+        rowCount={transactions.length}
+        rowRenderer={({ index, style }) => {
+          const transaction = transactions[index];
+          switch (transaction.type) {
+            case "INCOME":
+              return (
+                <Income
+                  key={transaction.id}
+                  style={style}
+                  income={transaction}
+                  accounts={accounts}
+                  categories={categories}
+                />
+              );
+            case "EXPENSE":
+              return (
+                <Expense
+                  key={transaction.id}
+                  style={style}
+                  expense={transaction}
+                  accounts={accounts}
+                  categories={categories}
+                />
+              );
+            case "TRANSFER":
+              return (
+                <Transfer
+                  key={transaction.id}
+                  style={style}
+                  transfer={transaction}
+                  accounts={accounts}
+                  categories={categories}
+                />
+              );
+            default:
+              console.warn(`Transaction with unknown type: ${transaction.type}`);
+              return null;
+          }}
         }
-      })}
-    </IonList>
+      ></List>
+    )}
+    </AutoSizer>
+    </div>
   );
 }
 

@@ -13,7 +13,7 @@ function getCategoryName(categories, id) {
   return category && category.name ? category.name : "";
 }
 
-export default function Expense({ expense, accounts, categories }) {
+export default function Expense({ expense, accounts, categories, style }) {
   const {
     id,
     amount,
@@ -28,6 +28,7 @@ export default function Expense({ expense, accounts, categories }) {
   return (
     <IonItem
       className="TransactionsListItem"
+      style={style}
       button
       routerLink={`/editExpense/${id}`}
     >
