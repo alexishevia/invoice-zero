@@ -15,7 +15,7 @@ import {
   monthStart,
   substractMonths,
   getMonthStrFromDate,
-  // getMonthsInRange,
+  getMonthsInRange,
 } from "../../../helpers/date";
 import { getAccounts } from "../../../models/accounts";
 import { getCategories } from "../../../models/categories";
@@ -36,20 +36,58 @@ export default function Trends({ onError }) {
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [accountBalances, setAccountBalances] = useState({});
-  const [accountMonthlyExpenses, setAccountMonthlyExpenses] = useState({});
+  const [stats, setStats] = useState(null);
+
+  const currentMonth = getMonthStrFromDate(new Date());
+  const months = getMonthsInRange(
+    new Date(activeFilters.fromDate),
+    new Date(activeFilters.toDate)
+  ).map(month => month.name);
+  const monthsObj = Object.fromEntries(months.map(m => [m, 0]));
+
+  // accountBalances is an object with format:
+  // { [accountID]: value }
+  // eg:
+  // { "accA": 583.25, "accB": 1023.50, ... }
+  const accountBalances = stats ?
+    Object.fromEntries(accounts.map((account) => {
+      const vals = stats.perAccount[account.id];
+      if (!vals) { return null; }
+      return [account.id, (vals.currentBalance || 0) / 100.0];
+    }).filter(Boolean))
+    : {};
+
+  // accountMonthlyExpenses is an object with format:
+  // { [accountID]: value }
+  // eg:
+  // { "accA": 583.25, "accB": 1023.50, ... }
+  const accountMonthlyExpenses = stats ?
+    Object.fromEntries(accounts.map((account) => {
+      const vals = stats.perAccount[account.id];
+      if (!vals) { return null; }
+      return [account.id, (vals.expenses.byMonth[currentMonth] || 0) / 100.0];
+    }).filter(Boolean))
+    : {};
 
   // incomeByMonth is an object with format:
   // { [monthName]: value }
   // eg:
   // { "2020-01": 1250.34, "2020-02": 1832.01, ... }
-  const [incomeByMonth, setIncomeByMonth] = useState({});
+  const incomeByMonth = stats ?
+    Object.fromEntries(months.map((month) => [
+      month, (stats.global.income.byMonth[month] || 0) / 100.0
+    ]))
+    : monthsObj;
 
   // expensesByMonth is an object with format:
   // { [monthName]: value }
   // eg:
   // { "2020-01": 1250.34, "2020-02": 1832.01, ... }
-  const [expensesByMonth, setExpensesByMonth] = useState({});
+  const expensesByMonth = stats ?
+    Object.fromEntries(months.map((month) => [
+      month, (stats.global.expenses.byMonth[month] || 0) / 100.0
+    ]))
+    : monthsObj;
 
   // expensesByCategory is an object with format:
   // { [categoryName]: { [monthName]: expenses } }
@@ -58,7 +96,19 @@ export default function Trends({ onError }) {
   //   "Restaurantes": { "2019-09": 4892.01, "2019-10": 3501.85, ... },
   //     ...
   // }
-  const [expensesByCategory, setExpensesByCategory] = useState({});
+  const expensesByCategory = stats ?
+    Object.fromEntries(
+      categories.map((category) => {
+        if (!category) { return null }
+        const expensesByMonth = Object.fromEntries(months.map((month) => {
+          const vals = stats.perCategory[category.id];
+          if (!vals) { return [month, 0] };
+          return [month, (vals.expenses.byMonth[month] || 0) / 100.0];
+        }));
+        return [category.name, expensesByMonth];
+      }).filter(Boolean)
+    )
+    : {};
 
   function handleOpenFiltersModal(evt) {
     evt.preventDefault();
@@ -100,143 +150,20 @@ export default function Trends({ onError }) {
     if (!accounts.length || !categories.length) {
       return;
     }
-
-    let cancelled = false;
+    const controller = new AbortController();
     async function fetchStats() {
-      const stats = await getStats();
-      if (cancelled) { return; }
-      setIncomeByMonth(
-        Object.entries(stats.global.income.byMonth).reduce(
-          (memo, [month, val]) => ({
-            ...memo,
-            [month]: val / 100.0,
-          }),
-          {}
-        )
-      );
-      setExpensesByMonth(
-        Object.entries(stats.global.expenses.byMonth).reduce(
-          (memo, [month, val]) => ({
-            ...memo,
-            [month]: val / 100.0,
-          }),
-          {}
-        )
-      );
-      setAccountBalances(
-        Object.entries(stats.perAccount).reduce((memo, [id, vals]) => {
-          memo[id] = vals.currentBalance / 100.0;
-          return memo;
-        }, {})
-      );
-      const currentMonth = getMonthStrFromDate(new Date());
-      setAccountMonthlyExpenses(
-        Object.entries(stats.perAccount).reduce((memo, [id, vals]) => {
-          memo[id] = vals.expenses.byMonth[currentMonth] / 100.0;
-          return memo;
-        }, {})
-      );
-      setExpensesByCategory(
-        Object.entries(stats.perCategory).reduce((memo, [id, vals]) => {
-          const category = categories.find(c => c.id === id);
-          memo[category.name] = Object.entries(vals.expenses.byMonth).reduce((mem, [month, cents]) => {
-            mem[month] = cents / 100.0;
-            return mem;
-          }, {});
-          return memo;
-        }, {})
-      );
+      try {
+        const stats = await getStats({ signal: controller.signal });
+        if (controller.signal.aborted) { return; }
+        setStats(stats);
+      } catch(err){
+        if (controller.signal.aborted) { return; }
+        onError(err);
+      }
     }
     fetchStats();
-    return () => { cancelled = true; };
-  }, [ accounts, categories, onError ]);
-
-  /*
-  useEffect(() => {
-    // wait until accounts and categories have loaded
-    if (!accounts.length || !categories.length) {
-      return;
-    }
-
-    const months = getMonthsInRange(
-      new Date(activeFilters.fromDate),
-      new Date(activeFilters.toDate)
-    );
-    const monthsObj = months.reduce(
-      (memo, { name }) => ({
-        ...memo,
-        [name]: 0,
-      }),
-      {}
-    );
-    const incomeByMonthResult = { ...monthsObj };
-    const expensesByMonthResult = { ...monthsObj };
-    const expensesByCategoryResult = {};
-
-    setIncomeByMonth(incomeByMonthResult);
-    setExpensesByMonth(expensesByMonthResult);
-
-    const mStart = dateToDayStr(monthStart(new Date()));
-    const mEnd = dateToDayStr(monthEnd(new Date()));
-    const balances = accounts.reduce((memo, acc) => ({
-      ...memo,
-      [acc.id]: acc.initialBalance || 0,
-    }), {});
-    const monthlyExpenses = accounts.reduce((memo, acc) => ({
-      ...memo,
-      [acc.id]: 0,
-    }), {});
-
-    let cancelled = false;
-
-    async function fetchGraphData() {
-      await
-      if (cancelled) { return; }
-      setAccountBalances(balances);
-      setAccountMonthlyExpenses(monthlyExpenses);
-      setIncomeByMonth(
-        Object.entries(incomeByMonthResult).reduce(
-          (memo, [month, val]) => ({
-            ...memo,
-            [month]: asMoneyFloat(val),
-          }),
-          {}
-        )
-      );
-      setExpensesByMonth(
-        Object.entries(expensesByMonthResult).reduce(
-          (memo, [month, val]) => ({
-            ...memo,
-            [month]: asMoneyFloat(val),
-          }),
-          {}
-        )
-      );
-      setExpensesByCategory(
-        Object.entries(expensesByCategoryResult).reduce(
-          (memo, [categoryName, values]) => ({
-            ...memo,
-            [categoryName]: Object.entries(values).reduce(
-              (agg, [month, val]) => ({
-                ...agg,
-                [month]: asMoneyFloat(val),
-              }),
-              {}
-            ),
-          }),
-          {}
-        )
-      );
-    }
-    fetchGraphData();
-    return () => { cancelled = true; };
-  }, [
-    activeFilters,
-    accounts,
-    categories,
-    onError,
-  ]);
-  */
+    return () => { controller.abort() };
+  }, [accounts, categories, onError]);
 
   return (
     <div style={{marginBottom: '5em' }}>
@@ -252,6 +179,9 @@ export default function Trends({ onError }) {
         <IonLabel>
           <h2>Account Balances</h2>
         </IonLabel>
+        <IonButton fill="clear" slot="end" onClick={handleOpenFiltersModal}>
+          <IonIcon icon={filterOutline} />
+        </IonButton>
       </IonItem>
       <AccountBalances
         accounts={accounts.map(({ id, name}) => ({

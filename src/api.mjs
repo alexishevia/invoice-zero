@@ -13,12 +13,12 @@ function buildURL(path) {
   return new URL(path, url)
 }
 
-export async function get(path, { query } = {}) {
+export async function get(path, { signal, query } = {}) {
   const url = buildURL(path);
   if (query) {
     url.search = new URLSearchParams(query).toString();
   }
-  const res = await fetch(url, { headers: baseHeaders() });
+  const res = await fetch(url, { headers: baseHeaders(), signal });
   if (!res.ok) {
     throw new Error(`failed getting ${url}`)
   }
