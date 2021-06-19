@@ -7,6 +7,7 @@ import {
   IonInput,
   IonItem,
   IonLabel,
+  IonLoading,
   IonPage,
   IonSelect,
   IonSelectOption,
@@ -61,6 +62,7 @@ export default function NewTransfer({ onError, onClose }) {
   const [transactionDate, setTransferDate] = useState(today());
   const [accounts, setAccounts] = useState([]);
   const [accountBalances, setAccountBalances] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchAccounts() {
@@ -95,6 +97,7 @@ export default function NewTransfer({ onError, onClose }) {
 
   async function handleSubmit(evt) {
     evt.preventDefault();
+    setIsLoading(true);
     try {
       const transferData = buildTransferData({
         fromID,
@@ -103,8 +106,10 @@ export default function NewTransfer({ onError, onClose }) {
         transactionDate,
       });
       await createTransfer(transferData);
+      setIsLoading(false);
       onClose();
     } catch (err) {
+      setIsLoading(false);
       onError(err);
     }
   }
@@ -117,6 +122,7 @@ export default function NewTransfer({ onError, onClose }) {
   return (
     <IonPage id="main-content">
       <ModalToolbar title="New Transfer" color="tertiary" onClose={onClose} />
+      <IonLoading isOpen={isLoading} />
       <IonContent>
         <form onSubmit={handleSubmit}>
           <IonItem>

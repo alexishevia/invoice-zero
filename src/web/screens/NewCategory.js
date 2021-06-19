@@ -6,6 +6,7 @@ import {
   IonInput,
   IonItem,
   IonLabel,
+  IonLoading,
   IonPage,
 } from '@ionic/react';
 import { createCategory } from '../../models/categories';
@@ -20,13 +21,17 @@ function buildCategoryData({ name }) {
 
 export default function NewCategory({ onError, onClose }) {
   const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(evt) {
     evt.preventDefault();
+    setIsLoading(true);
     try {
       await createCategory(buildCategoryData({ name }))
+      setIsLoading(false);
       onClose();
     } catch (err) {
+      setIsLoading(false);
       onError(err);
     }
   }
@@ -39,6 +44,7 @@ export default function NewCategory({ onError, onClose }) {
   return (
     <IonPage id="main-content">
       <ModalToolbar title="New Category" onClose={onClose} />
+      <IonLoading isOpen={isLoading} />
       <IonContent>
         <form onSubmit={handleSubmit}>
           <IonItem>

@@ -7,6 +7,7 @@ import {
   IonInput,
   IonItem,
   IonLabel,
+  IonLoading,
   IonPage,
   IonSelect,
   IonSelectOption,
@@ -67,6 +68,7 @@ export default function NewIncome({ onError, onClose }) {
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [accountBalances, setAccountBalances] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchAccounts() {
@@ -112,6 +114,7 @@ export default function NewIncome({ onError, onClose }) {
 
   async function handleSubmit(evt) {
     evt.preventDefault();
+    setIsLoading(true);
     try {
       const incomeData = buildIncomeData({
         accountID,
@@ -121,8 +124,10 @@ export default function NewIncome({ onError, onClose }) {
         transactionDate,
       });
       await createIncome(incomeData);
+      setIsLoading(false);
       onClose();
     } catch (err) {
+      setIsLoading(false);
       onError(err);
     }
   }
@@ -135,6 +140,7 @@ export default function NewIncome({ onError, onClose }) {
   return (
     <IonPage id="main-content">
       <ModalToolbar title="New Income" color="success" onClose={onClose} />
+      <IonLoading isOpen={isLoading} />
       <IonContent>
         <form onSubmit={handleSubmit}>
           <IonItem>
