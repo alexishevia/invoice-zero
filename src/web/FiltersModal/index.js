@@ -22,7 +22,7 @@ function unique(arr) {
   return Array.from(new Set(arr));
 }
 
-export default function FiltersModal({ isOpen, accounts, categories, initialFilters, onUpdate, onClose }) {
+export default function FiltersModal({ isOpen, accounts, categories, initialFilters, filtersToDisplay, onUpdate, onClose }) {
   const [transactionTypes, setTransactionTypes] = useState(initialFilters.transactionTypes);
   const [fromDate, setFromDate] = useState(initialFilters.fromDate);
   const [toDate, setToDate] = useState(initialFilters.toDate);
@@ -110,12 +110,16 @@ export default function FiltersModal({ isOpen, accounts, categories, initialFilt
       </IonToolbar>
       <IonContent>
         <IonList>
-          <DateFilter
-            fromDate={fromDate}
-            setFromDate={updateFromDate}
-            toDate={toDate}
-            setToDate={updateToDate}
-          />
+          {
+            filtersToDisplay.has('date') ? (
+              <DateFilter
+                fromDate={fromDate}
+                setFromDate={updateFromDate}
+                toDate={toDate}
+                setToDate={updateToDate}
+              />
+            ) : <></>
+          }
           {
             transactionTypes ? (
               <TypesFilter
@@ -124,21 +128,33 @@ export default function FiltersModal({ isOpen, accounts, categories, initialFilt
               />
             ) : <></>
           }
-          <AccountsFilter
-            accounts={accounts}
-            accountsStatus={accountIds}
-            setStatusForAccount={setStatusForAccount}
-          />
-          <CategoriesFilter
-            categories={categories}
-            categoriesStatus={categoryIds}
-            setStatusForCategory={setStatusForCategory}
-          />
+          {
+            filtersToDisplay.has('accounts') ? (
+              <AccountsFilter
+                accounts={accounts}
+                accountsStatus={accountIds}
+                setStatusForAccount={setStatusForAccount}
+              />
+            ) : <></>
+          }
+          {
+            filtersToDisplay.has('categories') ? (
+              <CategoriesFilter
+                categories={categories}
+                categoriesStatus={categoryIds}
+                setStatusForCategory={setStatusForCategory}
+              />
+            ) : <></>
+          }
         </IonList>
       </IonContent>
     </IonModal>
   )
 }
+
+FiltersModal.defaultProps = {
+  filtersToDisplay: new Set(['date', 'accounts', 'categories']),
+};
 
 FiltersModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
@@ -157,6 +173,9 @@ FiltersModal.propTypes = {
     accountIds: PropTypes.object.isRequired,
     categoryIds: PropTypes.object.isRequired,
   }).isRequired,
+  filtersToDisplay: PropTypes.shape({ // Set
+    has: PropTypes.func.isRequired,
+  }),
   onUpdate: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
 };

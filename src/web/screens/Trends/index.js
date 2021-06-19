@@ -25,8 +25,17 @@ import AccountBalances from "./AccountBalances";
 import IncomeVsExpenses from "./IncomeVsExpenses";
 import ExpensesByMonth from "./ExpensesByMonth";
 
+function sortByName(a, b) {
+  if (a.name > b.name) { return 1; }
+  if (b.name > a.name) { return -1; }
+  return 0;
+}
+
 export default function Trends({ onError }) {
   const today = new Date();
+  const [accounts, setAccounts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [stats, setStats] = useState(null);
   const [activeFilters, setActiveFilters] = useState({
     fromDate: dateToDayStr(substractMonths(monthStart(today), 12)),
     toDate: dateToDayStr(monthEnd(today)),
@@ -34,26 +43,32 @@ export default function Trends({ onError }) {
     categoryIds: {},
   });
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
-  const [accounts, setAccounts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [stats, setStats] = useState(null);
+  const [filtersToDisplay, setFiltersToDisplay] = useState();
 
+  // get filtered values
   const currentMonth = getMonthStrFromDate(new Date());
   const months = getMonthsInRange(
     new Date(activeFilters.fromDate),
     new Date(activeFilters.toDate)
   ).map(month => month.name);
   const monthsObj = Object.fromEntries(months.map(m => [m, 0]));
+  const activeAccountIds = Object.keys(activeFilters.accountIds).length > 1
+    ? Object.keys(activeFilters.accountIds).filter(id => activeFilters.accountIds[id])
+    : accounts.map(acc => acc.id)
+  const activeCategoryIds = Object.keys(activeFilters.categoryIds).length > 1
+    ? Object.keys(activeFilters.categoryIds).filter(id => activeFilters.categoryIds[id])
+    : categories.map(cat => cat.id)
+
 
   // accountBalances is an object with format:
   // { [accountID]: value }
   // eg:
   // { "accA": 583.25, "accB": 1023.50, ... }
   const accountBalances = stats ?
-    Object.fromEntries(accounts.map((account) => {
-      const vals = stats.perAccount[account.id];
+    Object.fromEntries(activeAccountIds.map((accountID) => {
+      const vals = stats.perAccount[accountID];
       if (!vals) { return null; }
-      return [account.id, (vals.currentBalance || 0) / 100.0];
+      return [accountID, (vals.currentBalance || 0) / 100.0];
     }).filter(Boolean))
     : {};
 
@@ -62,10 +77,10 @@ export default function Trends({ onError }) {
   // eg:
   // { "accA": 583.25, "accB": 1023.50, ... }
   const accountMonthlyExpenses = stats ?
-    Object.fromEntries(accounts.map((account) => {
-      const vals = stats.perAccount[account.id];
+    Object.fromEntries(activeAccountIds.map((accountID) => {
+      const vals = stats.perAccount[accountID];
       if (!vals) { return null; }
-      return [account.id, (vals.expenses.byMonth[currentMonth] || 0) / 100.0];
+      return [accountID, (vals.expenses.byMonth[currentMonth] || 0) / 100.0];
     }).filter(Boolean))
     : {};
 
@@ -98,10 +113,11 @@ export default function Trends({ onError }) {
   // }
   const expensesByCategory = stats ?
     Object.fromEntries(
-      categories.map((category) => {
-        if (!category) { return null }
+      activeCategoryIds.map((categoryID) => {
+        const category = categories.find(c => c.id === categoryID);
+        const vals = stats.perCategory[categoryID];
+        if (!category || !vals) { return null; }
         const expensesByMonth = Object.fromEntries(months.map((month) => {
-          const vals = stats.perCategory[category.id];
           if (!vals) { return [month, 0] };
           return [month, (vals.expenses.byMonth[month] || 0) / 100.0];
         }));
@@ -172,6 +188,7 @@ export default function Trends({ onError }) {
         accounts={accounts}
         categories={categories}
         initialFilters ={activeFilters}
+        filtersToDisplay={filtersToDisplay}
         onUpdate={handleFiltersUpdate}
         onClose={handleCloseFiltersModal}
       />
@@ -179,22 +196,41 @@ export default function Trends({ onError }) {
         <IonLabel>
           <h2>Account Balances</h2>
         </IonLabel>
-        <IonButton fill="clear" slot="end" onClick={handleOpenFiltersModal}>
+        <IonButton
+            fill="clear"
+            slot="end"
+            onClick={(evt) => {
+              setFiltersToDisplay(new Set(['accounts']));
+              handleOpenFiltersModal(evt);
+            }}
+        >
           <IonIcon icon={filterOutline} />
         </IonButton>
       </IonItem>
       <AccountBalances
-        accounts={accounts.map(({ id, name}) => ({
-          name,
-          balance: (accountBalances[id] || 0),
-          monthlyExpenses: (accountMonthlyExpenses[id] || 0),
-        }))}
+        accounts={
+          accounts
+          .filter(({ id }) => activeAccountIds.includes(id))
+          .sort(sortByName)
+          .map(({ id, name}) => ({
+            name,
+            balance: (accountBalances[id] || 0),
+            monthlyExpenses: (accountMonthlyExpenses[id] || 0)
+          }))
+        }
       />
       <IonItem style={{ marginBottom: "1rem" }}>
         <IonLabel>
           <h2>Income Vs Expenses</h2>
         </IonLabel>
-        <IonButton fill="clear" slot="end" onClick={handleOpenFiltersModal}>
+        <IonButton
+            fill="clear"
+            slot="end"
+            onClick={(evt) => {
+              setFiltersToDisplay(new Set(['date']));
+              handleOpenFiltersModal(evt);
+            }}
+        >
           <IonIcon icon={filterOutline} />
         </IonButton>
       </IonItem>
@@ -204,9 +240,16 @@ export default function Trends({ onError }) {
       />
       <IonItem style={{ marginTop: "1rem", marginBottom: "1rem" }}>
         <IonLabel>
-          <h2>Expenses By Month</h2>
+          <h2>Expenses By Category</h2>
         </IonLabel>
-        <IonButton fill="clear" slot="end" onClick={handleOpenFiltersModal}>
+        <IonButton
+            fill="clear"
+            slot="end"
+            onClick={(evt) => {
+              setFiltersToDisplay(new Set(['date', 'categories']));
+              handleOpenFiltersModal(evt);
+            }}
+        >
           <IonIcon icon={filterOutline} />
         </IonButton>
       </IonItem>
