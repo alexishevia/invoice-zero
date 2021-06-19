@@ -1,5 +1,8 @@
 import * as api from '../api.mjs';
-import { dateToDayStr, monthStart, monthEnd } from '../helpers/date';
+
+const cache = {
+  accounts: [],
+};
 
 export async function createAccount(data) {
   await api.post('/accounts', data);
@@ -18,7 +21,16 @@ export async function deleteAccount(account) {
   await api.del(`/accounts/${account.id}`);
 }
 
-export async function getAccounts() {
+async function refreshAccounts() {
   const accounts = await api.get('/accounts');
-  return accounts;
+  cache.accounts = accounts;
+}
+
+export async function getAccounts() {
+  if (cache.accounts.length) { // we have cached accounts
+    refreshAccounts(); // refresh in the background
+    return cache.accounts; // return cached accounts
+  }
+  await refreshAccounts();
+  return cache.accounts;
 }

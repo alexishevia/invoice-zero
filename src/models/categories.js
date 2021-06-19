@@ -1,5 +1,9 @@
 import * as api from '../api.mjs';
 
+const cache = {
+  categories: [],
+};
+
 export async function createCategory(data) {
   await api.post('/categories', data);
 }
@@ -17,7 +21,16 @@ export async function deleteCategory(category) {
   await api.del(`/categories/${category.id}`);
 }
 
-export async function getCategories() {
+async function refreshCategories() {
   const categories = await api.get('/categories');
-  return categories;
+  return cache.categories = categories;
+}
+
+export async function getCategories() {
+  if (cache.categories.length) { // we have cached categories
+    refreshCategories(); // refresh in the background
+    return cache.categories; // return cached categories
+  }
+  await refreshCategories();
+  return cache.categories;
 }
