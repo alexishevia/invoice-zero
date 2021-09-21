@@ -3,8 +3,16 @@ import PropTypes from "prop-types";
 import { IonList, IonItem, IonLabel, IonNote } from "@ionic/react";
 import { centsToDollar as toDollar } from "../../../helpers/currency";
 
-function Account({ account }) {
-  const { id, name, initialBalance, balance } = account;
+function getBalance(account, stats) {
+  if (stats && stats.perAccount && stats.perAccount[account.id]) {
+    return stats.perAccount[account.id].currentBalance;
+  }
+  return NaN;
+}
+
+function Account({ account, stats }) {
+  const { id, name, initialBalance } = account;
+  const balance = getBalance(account, stats);
   return (
     <IonItem button routerLink={`/editAccount/${id}`}>
       <IonLabel>
@@ -33,15 +41,15 @@ Account.propTypes = {
   }).isRequired,
 };
 
-function AccountsList({ accounts }) {
+function AccountsList({ accounts, stats }) {
   if (!accounts.length) {
     return null;
   }
 
   return (
-    <IonList className="TransactionsList">
+    <IonList>
       {accounts.map((account) => (
-        <Account key={account.id} account={account} />
+        <Account key={account.id} account={account} stats={stats} />
       ))}
     </IonList>
   );
@@ -49,6 +57,9 @@ function AccountsList({ accounts }) {
 
 AccountsList.propTypes = {
   accounts: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  stats: PropTypes.shape({
+    perAccount: PropTypes.shape(),
+  }),
 };
 
 export default AccountsList;

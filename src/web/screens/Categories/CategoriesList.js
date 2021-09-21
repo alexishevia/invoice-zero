@@ -38,7 +38,7 @@ function CategoriesList({ categories }) {
   }
 
   return (
-    <IonList className="TransactionsList">
+    <IonList>
       {categories.sort(sortByName).map((category) => (
         <Category key={category.id} category={category} />
       ))}
