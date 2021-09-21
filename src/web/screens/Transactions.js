@@ -20,11 +20,12 @@ import TransactionsList from "../TransactionsList";
 import { dateToDayStr, monthStart, monthEnd } from "../../helpers/date";
 import FiltersModal from "../FiltersModal";
 
-function sortByModifiedAt(a, b) {
-  if (a.modifiedAt > b.modifiedAt) {
+
+function sortByTransactionDate(a, b) {
+  if (a.transactionDate > b.transactionDate) {
     return -1;
   }
-  if (b.modifiedAt > a.modifiedAt) {
+  if (b.transactionDate > a.transactionDate) {
     return 1;
   }
   return 0;
@@ -134,7 +135,7 @@ export default function Transactions({ onError }) {
           ...transfers.map(t => ({ ...t, type: "TRANSFER" })),
           ...incomes.map(i => ({ ...i, type: "INCOME" })),
           ...expenses.map(e => ({ ...e, type: "EXPENSE" })),
-        ].sort(sortByModifiedAt));
+        ].sort(sortByTransactionDate));
       } catch(err){
         onError(err);
       }
