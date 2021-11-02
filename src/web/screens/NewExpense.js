@@ -17,7 +17,7 @@ import { getAccounts } from "../../models/accounts";
 import { getStats } from "../../models/stats";
 import { getCategories } from "../../models/categories";
 import { createExpense } from "../../models/expenses";
-import { dateToDayStr, isValidDayStr } from "../../helpers/date";
+import { dateToDayStr, isValidDate, isValidDayStr } from "../../helpers/date";
 import Validation from "../../helpers/Validation";
 import ModalToolbar from "../ModalToolbar";
 
@@ -64,7 +64,7 @@ export default function NewExpense({ onError, onClose }) {
   const [accountID, setAccountID] = useState(null);
   const [categoryID, setCategoryID] = useState(null);
   const [description, setDescription] = useState(null);
-  const [transactionDate, setExpenseDate] = useState(today());
+  const [transactionDate, setTransactionDate] = useState(today());
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [accountBalances, setAccountBalances] = useState({});
@@ -199,7 +199,10 @@ export default function NewExpense({ onError, onClose }) {
             <IonDatetime
               value={transactionDate}
               onIonChange={(evt) => {
-                setExpenseDate(evt.detail.value);
+                const date = new Date(evt.detail.value);
+                if (isValidDate(date)) {
+                  setTransactionDate(dateToDayStr(date));
+                }
               }}
             />
           </IonItem>

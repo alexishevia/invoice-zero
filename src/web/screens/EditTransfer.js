@@ -18,7 +18,7 @@ import { trashOutline } from "ionicons/icons";
 import { getAccounts } from "../../models/accounts";
 import { getStats } from "../../models/stats";
 import { getTransferByID, updateTransfer, deleteTransfer } from '../../models/transfers';
-import { dateToDayStr, isValidDayStr } from "../../helpers/date";
+import { dateToDayStr, isValidDate, isValidDayStr } from "../../helpers/date";
 import Validation from "../../helpers/Validation";
 import ModalToolbar from "../ModalToolbar";
 
@@ -61,7 +61,7 @@ export default function EditTransfer({ id, onError, onClose }) {
   const [amount, setAmount] = useState(null);
   const [fromID, setFromID] = useState(null);
   const [toID, setToID] = useState(null);
-  const [transactionDate, setTransferDate] = useState(null);
+  const [transactionDate, setTransactionDate] = useState(null);
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
   const [accounts, setAccounts] = useState([]);
   const [accountBalances, setAccountBalances] = useState({});
@@ -234,7 +234,10 @@ export default function EditTransfer({ id, onError, onClose }) {
             <IonDatetime
               value={transactionDateVal}
               onIonChange={(evt) => {
-                setTransferDate(evt.detail.value);
+                const date = new Date(evt.detail.value);
+                if (isValidDate(date)) {
+                  setTransactionDate(dateToDayStr(date));
+                }
               }}
             />
           </IonItem>

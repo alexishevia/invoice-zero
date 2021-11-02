@@ -19,7 +19,7 @@ import { getAccounts } from "../../models/accounts";
 import { getStats } from "../../models/stats";
 import { getExpenseByID, updateExpense, deleteExpense } from '../../models/expenses';
 import { getCategories } from "../../models/categories";
-import { dateToDayStr, isValidDayStr } from "../../helpers/date";
+import { dateToDayStr, isValidDate, isValidDayStr } from "../../helpers/date";
 import Validation from "../../helpers/Validation";
 import ModalToolbar from "../ModalToolbar";
 
@@ -66,7 +66,7 @@ export default function EditExpense({ id, onError, onClose }) {
   const [accountID, setAccountID] = useState(null);
   const [categoryID, setCategoryID] = useState(null);
   const [description, setDescription] = useState(null);
-  const [transactionDate, setExpenseDate] = useState(null);
+  const [transactionDate, setTransactionDate] = useState(null);
   const [isDeleteAlertOpen, setDeleteAlertOpen] = useState(false);
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -254,7 +254,10 @@ export default function EditExpense({ id, onError, onClose }) {
             <IonDatetime
               value={transactionDateVal}
               onIonChange={(evt) => {
-                setExpenseDate(evt.detail.value);
+                const date = new Date(evt.detail.value);
+                if (isValidDate(date)) {
+                  setTransactionDate(dateToDayStr(date));
+                }
               }}
             />
           </IonItem>

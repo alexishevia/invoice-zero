@@ -16,7 +16,7 @@ import { strToCents, centsToDollar } from '../../helpers/currency';
 import { getAccounts } from "../../models/accounts";
 import { getStats } from "../../models/stats";
 import { createTransfer } from "../../models/transfers";
-import { dateToDayStr, isValidDayStr } from "../../helpers/date";
+import { dateToDayStr, isValidDate, isValidDayStr } from "../../helpers/date";
 import Validation from "../../helpers/Validation";
 import ModalToolbar from "../ModalToolbar";
 
@@ -59,7 +59,7 @@ export default function NewTransfer({ onError, onClose }) {
   const [amount, setAmount] = useState(null);
   const [fromID, setFromID] = useState(null);
   const [toID, setToID] = useState(null);
-  const [transactionDate, setTransferDate] = useState(today());
+  const [transactionDate, setTransactionDate] = useState(today());
   const [accounts, setAccounts] = useState([]);
   const [accountBalances, setAccountBalances] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -182,7 +182,10 @@ export default function NewTransfer({ onError, onClose }) {
             <IonDatetime
               value={transactionDate}
               onIonChange={(evt) => {
-                setTransferDate(evt.detail.value);
+                const date = new Date(evt.detail.value);
+                if (isValidDate(date)) {
+                  setTransactionDate(dateToDayStr(date));
+                }
               }}
             />
           </IonItem>
