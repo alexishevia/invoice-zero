@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { EventEmitter } from 'events';
 import { IonApp, IonContent } from "@ionic/react";
-import { IonReactRouter } from "@ionic/react-router";
+import { IonReactHashRouter } from "@ionic/react-router";
 import { Switch } from "react-router";
 import { Route } from "react-router-dom";
 
@@ -56,7 +56,7 @@ function App() {
     <IonApp>
       <Errors errorEmitter={errorEmitter.current} />
       <IonContent>
-        <IonReactRouter>
+        <IonReactHashRouter>
           <MainMenu />
           <Switch>
             <Route
@@ -201,7 +201,7 @@ function App() {
               )}
             />
           </Switch>
-        </IonReactRouter>
+        </IonReactHashRouter>
       </IonContent>
     </IonApp>
   )
